@@ -1,0 +1,19 @@
+---
+
+characters:
+  - character1
+  - character2
+
+prompts:
+  quality: $ezpos
+  general: ''
+  negative: $ezneg, $not_naked
+  character1:
+    pre: ''
+    post: ''
+  character2:
+    pre: ''
+    post: ''
+
+base_payload:
+  alwayson_scripts: {{ 'next_each_other' | cn_pose('1:12,1:12', '0:0-7,0:7-12', '0.8,0.8') }}

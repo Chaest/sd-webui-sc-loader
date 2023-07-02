@@ -1,0 +1,18 @@
+---
+
+characters:
+  - char
+
+prompts:
+  quality: $ezpos
+  general: ''
+  negative: >-
+    $ezneg, $not_naked,
+    {{ ['', '((blue eyes, short hair))'] | for_tags(['default', 'lola']) }}
+  char:
+    pre: ''
+    post: ''
+
+base_payload:
+  width: {{ [512, 870] | for_tags(['default', 'landscape']) }}
+  height: {{ [512, 768] | for_tags(['default', 'portrait']) }}

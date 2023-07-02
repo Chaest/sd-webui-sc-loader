@@ -1,0 +1,5 @@
+---
+
+batches:
+  - batch_size: 4
+    n_iter: 25

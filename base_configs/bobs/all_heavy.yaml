@@ -1,0 +1,10 @@
+---
+
+batch_size: 8
+n_iter: 10
+
+models:
+  - sd
+
+batches: {{ models | model_list }}
+
