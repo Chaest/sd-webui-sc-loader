@@ -1,0 +1,15 @@
+[MESSAGES CONTROL]
+disable=logging-fstring-interpolation,
+        missing-docstring,
+        duplicate-code,
+        invalid-name,
+        global-statement
+
+[FORMAT]
+max-line-length=150
+
+[BASIC]
+good-names=c, m, i, k, v, gb, fd, ts, df, nd, id, si, d1, d2, d3
+
+[REPORTS]
+output-format=colorized

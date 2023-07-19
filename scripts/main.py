@@ -10,21 +10,22 @@ import gradio as gr
 
 import modules.scripts as scripts
 import modules.shared as shared
-from modules import script_callbacks, processing, ui, sd_samplers_common, generation_parameters_copypaste
+from modules import script_callbacks, processing, ui, sd_samplers_common, generation_parameters_copypaste, sd_models
 from modules.ui import plaintext_to_html
 from modules.ui_common import create_refresh_button
 from modules.ui_components import FormRow, FormGroup
 from modules.processing import program_version
 from modules.shared import opts
 from modules.call_queue import wrap_gradio_gpu_call
+from modules.sd_samplers import samplers
 
 current_directory = os.path.dirname(os.path.abspath(__file__))
 if current_directory not in sys.path:
     sys.path.append(current_directory)
 
 from sc_loader import context as c
-from sc_loader.batch import handle_bob
-from sc_loader.config import load_cfg, DB_PATH
+from sc_loader.run import payloads
+from sc_loader.config import load_cfg
 
 TAB_NAME = 'sc_loader'
 default_args = None
@@ -35,53 +36,26 @@ hard_skip_toggled = False
 
 
 def do_nothing():
-    print('HER')
+    pass
 
-def reload_db():
-    c.load_db(opts.sc_loader_config_path)
 
 def create_toprow():
-    nb_max_characters = len(c.database['characters'])
+    nb_max_characters = len(c.database['character_types'])
     with gr.Row(elem_id=f'{TAB_NAME}_toprow', variant='compact'):
         with gr.Column(elem_id=f'{TAB_NAME}_prompt_container', scale=6):
             with gr.Row():
                 with gr.Column(scale=1):
                     with gr.Row():
-                        def get_bobs():
-                            print('HERE')
-                            return [f.split('.')[0] for f in os.listdir(opts.sc_loader_config_path+'/bobs')]
-                        try:
-                            print(bob)
-                        except:
-                            pass
-                        bob = gr.Dropdown(label='Bob', choices=get_bobs(), type='value')
-                        print(bob)
-                        create_refresh_button(
-                            bob,
-                            do_nothing,
-                            lambda: {'choices': get_bobs()},
-                            f'{TAB_NAME}_refresh_bobs'
-                        )
-                with gr.Column(scale=1):
-                    with gr.Row():
-                        def get_scenarii():
-                            return [f.split('.')[0] for f in os.listdir(opts.sc_loader_config_path+'/scenarii')]
-                        scenario = gr.Dropdown(
-                            label='Scenario',
-                            choices=get_scenarii(),
-                            type='value'
-                        )
-                        create_refresh_button(
-                            scenario,
-                            do_nothing,
-                            lambda: {'choices': get_scenarii()},
-                            f'{TAB_NAME}_refresh_scenarii'
-                        )
-                with gr.Column(scale=1):
-                    with gr.Row():
-                        tags = gr.Textbox(label='Tags')
                         def get_models():
-                            return [model for model in c.database['sd_models']]
+                            return [
+                                '--- Lists ---',
+                                *list(c.database['series']['models'].keys()),
+                                '--- Models ---',
+                                *[model.split('.')[0] for model in sd_models.checkpoint_tiles()]
+                            ]
+                        def reload():
+                            c.load_db()
+                            sd_models.list_models()
                         model = gr.Dropdown(
                             label='Model',
                             choices=get_models(),
@@ -89,10 +63,33 @@ def create_toprow():
                         )
                         create_refresh_button(
                             model,
-                            reload_db,
+                            reload,
                             lambda: {'choices': get_models()},
                             f'{TAB_NAME}_refresh_models'
                         )
+                with gr.Column(scale=1):
+                    with gr.Row():
+                        def get_scenarios():
+                            return [
+                                '--- Lists ---',
+                                *list(c.database['series']['scenarios'].keys()),
+                                '--- Scenarios ---',
+                                *list(c.database['scenarios'].keys())
+                            ]
+                        scenario = gr.Dropdown(
+                            label='Scenario',
+                            choices=get_scenarios(),
+                            type='value'
+                        )
+                        create_refresh_button(
+                            scenario,
+                            c.load_db,
+                            lambda: {'choices': get_scenarios()},
+                            f'{TAB_NAME}_refresh_scenarii'
+                        )
+                with gr.Column(scale=1):
+                    with gr.Row():
+                        tags = gr.Textbox(label='Tags')
 
             with gr.Row():
                 with gr.Column(scale=80):
@@ -101,15 +98,20 @@ def create_toprow():
                     for i in range(nb_max_characters):
                         with gr.Row(visible=False) as character_rows[i]:
                             def get_chars():
-                                return list(c.database['prompts']['characters'].keys())
+                                return [
+                                '--- Lists ---',
+                                *list(c.database['series']['characters'].keys()),
+                                '--- Scenarios ---',
+                                *list(c.database['prompts']['characters'].keys())
+                            ]
                             characters[i] = gr.Dropdown(
-                                label=c.database['characters'][i],
+                                label=c.database['character_types'][i],
                                 choices=get_chars(),
                                 type='value'
                             )
                             create_refresh_button(
                                 characters[i],
-                                reload_db,
+                                c.load_db,
                                 lambda: {'choices': get_chars()},
                                 f'{TAB_NAME}_refresh_chars_{i}'
                             )
@@ -117,9 +119,11 @@ def create_toprow():
         with gr.Column(scale=1, elem_id=f'{TAB_NAME}_actions_column'):
             with gr.Row(elem_id=f'{TAB_NAME}_generate_box', elem_classes='generate-box'):
                 submit = gr.Button('Generate', elem_id=f'{TAB_NAME}_generate', variant='primary')
-                interrupt = gr.Button('Interrupt', elem_id=f'{TAB_NAME}_interrupt')
                 skip = gr.Button('Skip', elem_id=f'{TAB_NAME}_skip')
                 hard_skip = gr.Button('Hard Skip', elem_id=f'{TAB_NAME}_hard_skip')
+                nb_repeats = gr.Slider(minimum=1.0, maximum=100.0, step=1.0, label='Nb repeats', value=1.0)
+                nb_batches = gr.Slider(minimum=1.0, maximum=100.0, step=1.0, label='Nb batches', value=1.0)
+                nb_iter = gr.Slider(minimum=1.0, maximum=8.0, step=1.0, label='Batch size', value=1.0)
 
                 def hard_skipping():
                     global hard_skip_toggled
@@ -127,22 +131,38 @@ def create_toprow():
                     shared.state.skip()
                     shared.state.interrupt()
 
-                interrupt.click(fn=shared.state.interrupt)
                 skip.click(fn=shared.state.skip)
                 hard_skip.click(fn=hard_skipping)
 
     def switch_sc(scenario):
         global expected_characters_idxs
-        data = load_cfg(opts.sc_loader_config_path+'/scenarii/'+scenario+'.yaml')
+        try:
+            data = c.database['scenarios'][c.database['series']['scenarios'][scenario][0]]
+            print(c.database['series']['scenarios'][scenario][0])
+            print(data)
+        except KeyError:
+            data = c.database['scenarios'][scenario]
+            print(scenario)
+            print(data)
+
         expected_characters = data['characters']
-        expected_characters_idxs = [c.database['characters'].index(character) for character in expected_characters]
+        expected_characters_idxs = [c.database['character_types'].index(character) for character in expected_characters]
         return [*[
             gr.update(visible=i in expected_characters_idxs)
             for i in range(nb_max_characters)
         ]]
     scenario.change(switch_sc, [scenario], [*character_rows], queue=False)
 
-    return {'bob': bob, 'scenario': scenario, 'tags': tags, 'submit': submit, 'characters': characters, 'model': model}
+    return {
+        'scenario': scenario,
+        'tags': tags,
+        'submit': submit,
+        'characters': characters,
+        'model': model,
+        'nb_repeats': nb_repeats,
+        'nb_batches': nb_batches,
+        'nb_iter': nb_iter
+    }
 
 def sampler_section():
     with FormRow(elem_id=f'sampler_overrides_{TAB_NAME}'):
@@ -152,7 +172,8 @@ def sampler_section():
         sampler = gr.Dropdown(
             label='Sampler',
             elem_id=f'{TAB_NAME}_sampling',
-            choices=c.database['samplers'],
+            choices=[x.name for x in samplers],
+            value='DPM++ 2M Karras',
             type='value'
         )
         steps = gr.Slider(
@@ -163,7 +184,7 @@ def sampler_section():
             label='Sampling steps',
             value=20
         )
-    return {'sampler': {'override': override_s, 'value': sampler}, 'steps': {'override': override_ss, 'step_value': steps}}
+    return {'sampler': {'override': override_s, 'value': sampler}, 'steps': {'override': override_ss, 'value': steps}}
 
 def checkboxes():
     with FormRow(elem_classes='checkboxes-row', variant='compact'):
@@ -184,7 +205,8 @@ def hires_fix():
         upscaler = gr.Dropdown(
             label='Upscaler',
             elem_id=f'{TAB_NAME}_hr_upscaler',
-            choices=c.database['upscalers'],
+            choices=[*shared.latent_upscale_modes, *[x.name for x in shared.sd_upscalers]],
+            value='R-ESRGAN 4x+',
             type='value'
         )
         scale = gr.Slider(
@@ -364,20 +386,47 @@ def create_infotext(p, all_prompts, all_seeds, all_subseeds, comments=None, iter
 
     return f'{c.short_prompts["positive"]}\nNegative prompt: {c.short_prompts["negative"]}\n{generation_params_text}'.strip()
 
-def bobing(_bob, bob, scenario, tags, upscaler, hr, rf, use_scale, cfg_scale, model, use_clip_skip, clip_skip, *characters):
+def bobing(
+    _,
+    scenario,
+    tags,
+    upscaler,
+    hr,
+    rf,
+    use_scale,
+    cfg_scale,
+    model,
+    use_clip_skip,
+    clip_skip,
+    nb_repeats,
+    nb_batches,
+    nb_iter,
+    override_sampler,
+    sampler,
+    override_steps,
+    steps,
+    seed,
+    *characters
+):
     global ui_elements, expected_characters_idxs, hard_skip_toggled
 
-    c.init(opts.sc_loader_config_path)
-    c.tags = tags.split(',')
+    c.init()
+    c.tags = [tag.strip() for tag in tags.split(',')]
     c.model = model
     c.hr = hr
     c.restore = rf
     c.upscaler = upscaler or c.upscaler
     c.scenario = scenario
     c.cfg_scale = cfg_scale if use_scale else None
+    c.nb_repeats = nb_repeats
+    c.nb_batches = nb_batches
+    c.nb_iter = nb_iter
+    c.sampler = sampler if override_sampler else None
+    c.steps = steps if override_steps else None
+    c.seed = seed
     c.chars = [characters[idx] for idx in expected_characters_idxs]
 
-    print(opts.sc_loader_config_path, c.tags, c.hr, c.restore, c.upscaler, c.scenario, c.chars, bob, _bob)
+    print(opts.sc_loader_config_path, c.tags, c.hr, c.restore, c.upscaler, c.scenario, c.chars)
 
     if use_clip_skip:
         old_clip_skip_value = opts.CLIP_stop_at_last_layers
@@ -389,7 +438,7 @@ def bobing(_bob, bob, scenario, tags, upscaler, hr, rf, use_scale, cfg_scale, mo
     gallery = []
     first_gen = None
     try:
-        for payload in handle_bob(bob, opts.sc_loader_config_path):
+        for payload in payloads():
             if hard_skip_toggled:
                 hard_skip_toggled = False
                 break
@@ -403,7 +452,8 @@ def bobing(_bob, bob, scenario, tags, upscaler, hr, rf, use_scale, cfg_scale, mo
             samples_dir = opts.outdir_txt2img_samples + '/' + date
             last_file_name = sorted([f for f in os.listdir(samples_dir)])[-1].split('.')[0]
 
-            with open(f'{samples_dir}/{last_file_name}a - {c.c["model"]}.json', 'w') as fp:
+            model = payload['override_settings']['sd_model_checkpoint']
+            with open(f'{samples_dir}/{last_file_name}a - {model}.json', 'w') as fp:
                 payload['date'] = date
                 json.dump(payload, fp, indent=4)
     except:
@@ -423,7 +473,7 @@ def bobing(_bob, bob, scenario, tags, upscaler, hr, rf, use_scale, cfg_scale, mo
 def create_ui():
     global ui_elements
 
-    c.init(opts.sc_loader_config_path)
+    c.init()
 
     with gr.Blocks(analytics_enabled=False) as ui_component:
         ui_elements = create_toprow()
@@ -442,8 +492,7 @@ def create_ui():
                 fn=wrap_gradio_gpu_call(bobing, extra_outputs=[None, '', '']),
                 _js='submit_sc_loader',
                 inputs=[
-                    ui_elements['bob'],
-                    ui_elements['bob'],
+                    ui_elements['scenario'],
                     ui_elements['scenario'],
                     ui_elements['tags'],
                     ui_elements['upscaler'],
@@ -454,6 +503,14 @@ def create_ui():
                     ui_elements['model'],
                     ui_elements['use_clip_skip'],
                     ui_elements['clip_skip'],
+                    ui_elements['nb_repeats'],
+                    ui_elements['nb_batches'],
+                    ui_elements['nb_iter'],
+                    ui_elements['sampler']['override'],
+                    ui_elements['sampler']['value'],
+                    ui_elements['steps']['override'],
+                    ui_elements['steps']['value'],
+                    ui_elements['seed'],
                     *ui_elements['characters']
                 ],
                 outputs=[txt2img_gallery, generation_info, html_info, html_log],

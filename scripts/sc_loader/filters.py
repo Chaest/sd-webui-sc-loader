@@ -25,6 +25,34 @@ def cn_pose_for_tags(poses, tags, ce_divs, ce_pos, ce_weights):
         'Composable Lora': {'args': [True, False, False]}
     }
 
+def build_base_sc(general, width, height):
+    return {
+        'characters': ['char'],
+        'prompts': {
+            'quality': '$ezpos',
+            'general': general,
+            'negative': '$ezneg, $not_naked',
+            'char': {
+                'pre': '',
+                'post': ''
+            }
+        },
+        'base_payload': {
+            'width': width,
+            'height': height
+        }
+    }
+
+def build_show_sc(general, width, height):
+    scenario = build_base_sc(general, width, height)
+    if 'portrait' in c.tags:
+        scenario['prompts']['general'] += ', portrait, close-up'
+    if 'full' in c.tags:
+        scenario['prompts']['general'] += ', full body'
+    if 'upper' in c.tags:
+        scenario['prompts']['general'] += ', upper body, cowboy shot'
+    return scenario
+
 def grad_desc(lists, tags):
     for i, tag in enumerate(tags[::-1]):
         if tag in c.tags:
@@ -51,5 +79,7 @@ FILTERS = {
     'grad_desc': grad_desc,
     'cn_pose_solo': cn_pose_solo,
     'model_list': lambda l: [{'model': element} for element in l],
-    'if_tag': lambda v, t: v if t in c.tags else ''
+    'if_tag': lambda v, t: v if t in c.tags else '',
+    'build_base_sc': build_base_sc,
+    'build_show_sc': build_show_sc
 }

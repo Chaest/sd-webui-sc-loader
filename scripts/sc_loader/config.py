@@ -1,35 +1,77 @@
-from contextlib import contextmanager
-import json
+import os
+import copy
 
 from sonotoria import jaml
 
 from .filters import FILTERS
-from .tags import update_tags
 
-DB_PATH = 'db.yaml'
-SC_DB_PATH = 'db.json'
+def load_yaml_dict(path):
+    value = jaml.load(path, filters=FILTERS)
+    if isinstance(value, dict):
+        return value
+    if isinstance(value, list):
+        return {path_to_name(path): value}
+    print(f'[ERROR] Expected dict or list at {path}, value ignored...')
+    return {}
+
+def load_file_as_str(path):
+    with open(path, 'r', encoding='utf-8') as file_:
+        return file_.read()
+
+def load_txt_list(path):
+    return load_file_as_str(path).strip().replace('\r', '').split('\n')
+
+def path_to_name(path):
+    return path.split('/')[-1].split('.')[0]
+
+def load_dir_element(path, root=False):
+    data = {}
+    for path_ in os.listdir(path):
+        path_ = path + '/' + path_
+        if os.path.isdir(path_):
+            data = merged_dicts(data, load_dir_element(path_))
+        else:
+            data = merged_dicts(data, load_file_element(path_))
+    return data if root else {path_to_name(path): data}
+
+def load_file_element(path):
+    if not os.path.exists(path):
+        print(f'[ERROR] {path} not found, ignored...')
+        return {}
+
+    if path.endswith(('.json', '.yml', '.yaml')):
+        data = load_yaml_dict(path)
+        if isinstance(data, dict):
+            return data
+
+    elif path.endswith(('.text', '.txt')):
+        data = load_txt_list(path)
+
+    else:
+        data = load_file_as_str(path)
+
+    return {path_to_name(path): data}
+
+def merged_dicts(d1, *dicts):
+    res = copy.deepcopy(d1 or {})
+    for d2 in dicts:
+        rec_add_dict(res, d2 or {}, [])
+    return res
+
+def rec_add_dict(dest, src, path):
+    for k, v in src.items():
+        if k not in dest:
+            dest[k] = copy.deepcopy(v)
+        else:
+            type_match =(type(dest[k]), type(v))
+            if type_match == (list, list):
+                dest[k] += v
+            if type_match == (dict, dict):
+                rec_add_dict(dest[k], v, path + [k])
+            raise Exception(f'Trying to replace existing value for key {k} at {" -> ".join(path)}.')
 
 def load_cfg(cfg_path):
     if not cfg_path.endswith('.yaml'):
         cfg_path = cfg_path + '.yaml'
     cfg = jaml.load(cfg_path, filters=FILTERS)
-    update_tags(cfg.get('tags', []))
     return cfg
-
-def load_sc_db(db_path):
-    try:
-        with open(db_path, 'r') as fp:
-            return json.load(fp)
-    except:
-        return {}
-
-def update_sc_db(db_path, db):
-    with open(db_path, 'w') as fp:
-        json.dump(db, fp)
-
-@contextmanager
-def sc_db(sc_path):
-    db_path = f'{sc_path}/{SC_DB_PATH}'
-    db = load_sc_db(db_path)
-    yield db
-    update_sc_db(db_path, db)
