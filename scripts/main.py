@@ -89,8 +89,13 @@ def create_toprow():
                         )
                 with gr.Column(scale=1):
                     with gr.Row():
+                        positive = gr.Textbox(label='Positive')
+                with gr.Column(scale=1):
+                    with gr.Row():
+                        negative = gr.Textbox(label='Negative')
+                with gr.Column(scale=80):
+                    with gr.Row():
                         tags = gr.Textbox(label='Tags')
-
             with gr.Row():
                 with gr.Column(scale=80):
                     characters = [None for _ in range(nb_max_characters)]
@@ -119,7 +124,8 @@ def create_toprow():
         with gr.Column(scale=1, elem_id=f'{TAB_NAME}_actions_column'):
             with gr.Row(elem_id=f'{TAB_NAME}_generate_box', elem_classes='generate-box'):
                 submit = gr.Button('Generate', elem_id=f'{TAB_NAME}_generate', variant='primary')
-                skip = gr.Button('Skip', elem_id=f'{TAB_NAME}_skip')
+                skip_batch = gr.Button('Skip batch', elem_id=f'{TAB_NAME}_skip_batch')
+                skip_model = gr.Button('Skip model', elem_id=f'{TAB_NAME}_skip_model')
                 hard_skip = gr.Button('Hard Skip', elem_id=f'{TAB_NAME}_hard_skip')
                 nb_repeats = gr.Slider(minimum=1.0, maximum=100.0, step=1.0, label='Nb repeats', value=1.0)
                 nb_batches = gr.Slider(minimum=1.0, maximum=100.0, step=1.0, label='Nb batches', value=1.0)
@@ -131,7 +137,12 @@ def create_toprow():
                     shared.state.skip()
                     shared.state.interrupt()
 
-                skip.click(fn=shared.state.skip)
+                def model_skipping():
+                    c.skip_model = True
+                    shared.state.skip()
+
+                skip_batch.click(fn=shared.state.skip)
+                skip_model.click(fn=model_skipping)
                 hard_skip.click(fn=hard_skipping)
 
     def switch_sc(scenario):
@@ -161,7 +172,9 @@ def create_toprow():
         'model': model,
         'nb_repeats': nb_repeats,
         'nb_batches': nb_batches,
-        'nb_iter': nb_iter
+        'nb_iter': nb_iter,
+        'positive': positive,
+        'negative': negative
     }
 
 def sampler_section():
@@ -406,6 +419,8 @@ def bobing(
     override_steps,
     steps,
     seed,
+    positive,
+    negative,
     *characters
 ):
     global ui_elements, expected_characters_idxs, hard_skip_toggled
@@ -424,6 +439,8 @@ def bobing(
     c.sampler = sampler if override_sampler else None
     c.steps = steps if override_steps else None
     c.seed = seed
+    c.positive = positive
+    c.negative = negative
     c.chars = [characters[idx] for idx in expected_characters_idxs]
 
     print(opts.sc_loader_config_path, c.tags, c.hr, c.restore, c.upscaler, c.scenario, c.chars)
@@ -511,6 +528,8 @@ def create_ui():
                     ui_elements['steps']['override'],
                     ui_elements['steps']['value'],
                     ui_elements['seed'],
+                    ui_elements['positive'],
+                    ui_elements['negative'],
                     *ui_elements['characters']
                 ],
                 outputs=[txt2img_gallery, generation_info, html_info, html_log],

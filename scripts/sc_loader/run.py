@@ -40,6 +40,16 @@ def payloads():
     input_lists = [models, scenarios, *characters_lists]
     full_length = prod(len(input_list) for input_list in input_lists)
     input_couplings = list(zip(*gen_couplings(input_lists, full_length)))
+    skipped_models = []
     for input_coupling in input_couplings:
+        if input_coupling[0] in skipped_models:
+            print(skipped_models)
+            continue
         for payload in create_payloads(*input_coupling):
+            if c.skip_model:
+                skipped_models.append(payload['override_settings']['sd_model_checkpoint'])
+                c.skip_model = False
+            if payload['override_settings']['sd_model_checkpoint'] in skipped_models:
+                print('in', skipped_models)
+                continue
             yield payload

@@ -24,12 +24,11 @@ DEFAULT_PAYLOAD_DATA = {
 
 
 def create_payloads(model, scenario, *characters):
-    payload = DEFAULT_PAYLOAD_DATA | scenario['base_payload']
-    payload = copy.deepcopy(payload)
-    update_cn_data(payload)
-    update_hr_data(payload)
-    update_data(payload, model)
     for _ in range(c.nb_repeats):
+        payload = copy.deepcopy(DEFAULT_PAYLOAD_DATA | scenario['base_payload'])
+        update_cn_data(payload)
+        update_hr_data(payload)
+        update_data(payload, model)
         yield payload | build_prompts(scenario, characters)
 
 def update_data(payload, model):
@@ -60,6 +59,17 @@ def update_hr_data(payload):
             payload['width'] = int(float(payload['width']) * ratio)
             payload['height'] = int(float(payload['height']) * ratio)
 
+def get_pose(unit):
+    img = unit['input_image']
+    if c.database['series'].get('poses', {}).get(img):
+        return random.choice(c.database['series']['poses'][img])
+    return img
+
+def pose_to_img(pose):
+    if '.' not in pose:
+        pose += '.png'
+    return load_img_str(f'{opts.sc_loader_config_path}/poses/{pose}')
+
 def update_cn_data(payload):
     if 'alwayson_scripts' not in payload or 'controlnet' not in payload['alwayson_scripts']:
         return
@@ -67,7 +77,7 @@ def update_cn_data(payload):
     cn_units = cn_data['args']
     cn_data['args'] = [
         {
-            'input_image': load_img_str(opts.sc_loader_config_path + '/poses/' + unit['input_image'] + '.png'),
+            'input_image': pose_to_img(get_pose(unit)),
             'model': 'control_sd15_openpose [fef5e48e]'
         }
         for unit in cn_units
@@ -96,10 +106,11 @@ def build_prompts(scenario, characters):
 
     positive_prompt = '\n'.join((
         scenario['prompts']['quality'],
-        scenario['prompts']['general']
+        scenario['prompts']['general'],
+        c.positive or ''
     ))
     positive_prompt = ' AND '.join([positive_prompt, *chars_prompts])
-    negative_prompt = scenario['prompts']['negative'] + ',' + ','.join(chars_neg_prompts)
+    negative_prompt = scenario['prompts']['negative'] + ',' + (c.negative or '') + ',' + ','.join(chars_neg_prompts)
 
     return {
         'prompt': expand_prompt(positive_prompt),
@@ -110,11 +121,11 @@ def build_short_prompt(scenario):
     positive_prompt = '\n'.join((
         f'[[Scenario Loader v{c.version}]]',
         '## ' + datetime.today().strftime('%Y-%m-%d'),
-        scenario['prompts']['quality'],
+        scenario['prompts']['quality'] + ', ' + (c.positive or ''),
         f'scenario: {c.scenario}',
         '\n'.join([f'@{c.chars[idx]}' for idx, _ in enumerate(scenario['characters'])])
     ))
-    negative_prompt = scenario['prompts']['negative']
+    negative_prompt = scenario['prompts']['negative'] + ', ' + (c.negative or '')
 
     c.short_prompts = {
         'positive': positive_prompt,

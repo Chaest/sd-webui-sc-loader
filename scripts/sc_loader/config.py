@@ -3,10 +3,10 @@ import copy
 
 from sonotoria import jaml
 
-from .filters import FILTERS
+from .filters import load_filters
 
 def load_yaml_dict(path):
-    value = jaml.load(path, filters=FILTERS)
+    value = jaml.load(path, filters=load_filters())
     if isinstance(value, dict):
         return value
     if isinstance(value, list):
@@ -73,5 +73,5 @@ def rec_add_dict(dest, src, path):
 def load_cfg(cfg_path):
     if not cfg_path.endswith('.yaml'):
         cfg_path = cfg_path + '.yaml'
-    cfg = jaml.load(cfg_path, filters=FILTERS)
+    cfg = jaml.load(cfg_path, filters=load_filters())
     return cfg
