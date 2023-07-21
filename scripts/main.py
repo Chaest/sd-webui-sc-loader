@@ -1,10 +1,13 @@
 import os
 import sys
+import re
 import copy
 import threading
 import json
 from datetime import datetime
 import traceback
+
+import requests
 
 import gradio as gr
 
@@ -545,6 +548,132 @@ def create_ui():
 
         return [(ui_component, 'Sc Loader', 'sc_loader')]
 
+def create_character(sc_file, char_name, civitai_url, prompt, weight):
+    if char_name in c.database['prompts']['characters']:
+        print(f'Character ({char_name}) already exists')
+        return
+
+    print('Starting character creation')
+    path_to_char_file = f'{opts.sc_loader_config_path}/db/prompts/characters/{sc_file}'
+    civitai_url_regex = r'https://civitai\.com/models/(?P<id>\d+)/[^\[]+(\[(?P<pids>\d+(,\d+)*)\])?'
+    m = re.match(civitai_url_regex, civitai_url)
+    if not m:
+        print(f'URL ({civitai_url}) is not valid')
+        return
+
+    url_data = m.groupdict()
+    model_id = url_data['id']
+    pids_str = url_data.get('pids')
+    pids = [int(pid) for pid in pids_str.split(',')] if pids_str else []
+    print(f'Selected {pids}')
+    print(f'Getting model {model_id}')
+    response = requests.get(f'https://civitai.com/api/v1/models/{model_id}')
+    content = response.json()
+    model_version = content['modelVersions'][0]
+    version_model_file = model_version['files'][0]
+    if version_model_file['type'] != 'Model':
+        print('Invalid model type:', model_version['type'])
+        return
+    if model_version['baseModel'] != 'SD 1.5':
+        print('Invalid base model:', model_version['baseModel'])
+        return
+
+    print('Building data')
+    model_type = 'lora' if content['type'] == 'LORA' else ('lyco' if content['type'] != 'TextualInversion' else 'TextualInversion')
+    file_hash = version_model_file['hashes']['AutoV2']
+    download_url = version_model_file['downloadUrl']
+
+    if model_type == 'TextualInversion':
+        file_name = version_model_file['name'].replace('.pt', '_' + file_hash)
+        trained_words = f'({file_name}:{weight})'
+        if prompt:
+            trained_words += ', ' + prompt
+        char_data = f'\n{char_name}: {trained_words}\n'
+        file_path = f'embeddings/{file_name}.pt'
+    else:
+        trained_words = ', '.join([trained_word for idx, trained_word in enumerate(model_version['trainedWords']) if not pids or idx in pids])
+        if prompt:
+            trained_words += ', ' + prompt
+        file_name = version_model_file['name'].replace('.safetensors', '_' + file_hash)
+        char_data = f'\n{char_name}: >-\n  {trained_words}, <{model_type}:{file_name}:{weight}>\n'
+        subfolder = 'Lora' if model_type == 'lora' else 'LyCORIS'
+        file_path = f'models/{subfolder}/{file_name}.safetensors'
+
+
+    print('Downloading character')
+    response = requests.get(download_url, stream=True)
+    response.raise_for_status()
+    model_path = f'{os.getcwd()}/{file_path}'
+    print('Destination:', model_path)
+    if not os.path.exists(model_path):
+        with open(model_path, 'wb') as fd:
+            for chunk in response.iter_content(chunk_size=8192):
+                fd.write(chunk)
+    else:
+        print('Model already present')
+    print('Character downloaded')
+
+    print(f'Adding character prompt to ({path_to_char_file})')
+    with open(path_to_char_file, 'a', encoding='utf-8') as sc_file:
+        sc_file.write(char_data)
+    print('Character added')
+
+def create_character_creation_tab():
+    tab_name = 'char_creator'
+    with gr.Blocks(analytics_enabled=False) as ui_component:
+        with gr.Row(elem_id=f'{tab_name}_toprow', variant='compact'):
+            with gr.Column(elem_id=f'{tab_name}_prompt_container', scale=6):
+                with gr.Row():
+                    with gr.Column(scale=1):
+                        with gr.Row():
+                            def get_char_files():
+                                path_to_char_files = f'{opts.sc_loader_config_path}/db/prompts/characters'
+                                return [
+                                    file_name
+                                    for file_name in os.listdir(path_to_char_files)
+                                    if any(file_name.endswith(ext) for ext in ('.yaml', '.yml'))
+                                ]
+                            char_file = gr.Dropdown(
+                                label='File',
+                                choices=get_char_files(),
+                                type='value'
+                            )
+                            create_refresh_button(
+                                char_file,
+                                c.load_db,
+                                lambda: {'choices': get_char_files()},
+                                f'{tab_name}_refresh_char_files'
+                            )
+                    with gr.Column(scale=2):
+                        with gr.Row():
+                            char_name = gr.Textbox(label='Name')
+                    with gr.Column(scale=3):
+                        with gr.Row():
+                            civitai_url = gr.Textbox(label='URL')
+                with gr.Row():
+                    with gr.Column(scale=80):
+                        prompt = gr.Textbox(label='Additional prompts')
+                with gr.Row():
+                    with gr.Column(scale=1):
+                        weight = gr.Slider(
+                            minimum=-2.0,
+                            maximum=2.0,
+                            step=0.05,
+                            label='Model weight',
+                            value=0.75,
+                            elem_id=f'{tab_name}_model_weight'
+                        )
+                with gr.Row():
+                    with gr.Column(scale=1):
+                        submit = gr.Button('Create character', elem_id=f'{tab_name}_generate', variant='primary')
+
+                        submit.click(
+                            fn=create_character,
+                            inputs=[char_file, char_name, civitai_url, prompt, weight]
+                        )
+
+        return [(ui_component, 'Character creation', 'char_creator')]
+
 def create_ui_settings():
     section = ('sc_loader', 'Scenario loader')
     shared.opts.add_option(
@@ -560,3 +689,4 @@ def create_ui_settings():
 
 script_callbacks.on_ui_settings(create_ui_settings)
 script_callbacks.on_ui_tabs(create_ui)
+script_callbacks.on_ui_tabs(create_character_creation_tab)

@@ -25,7 +25,7 @@ seed       = -1
 skip_model = False
 
 short_prompts = {'positive': '', 'negative': ''}
-version = '3.1.0'
+version = '3.2.0'
 
 def load_db():
     global database
