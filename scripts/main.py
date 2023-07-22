@@ -594,18 +594,18 @@ def create_character(sc_file, name, civitai_url, prompt, weight):
         trained_words = f'({file_name}:{weight})'
         if prompt:
             trained_words += ', ' + prompt
+        trained_words = trained_words.replace('\\', '\\\\').strip()
         char_data = f'\n{name}: {trained_words}\n'
         file_path = f'embeddings/{file_name}.pt'
     else:
         trained_words = ', '.join([trained_word for idx, trained_word in enumerate(model_version['trainedWords']) if not pids or idx in pids])
         if prompt:
             trained_words += ', ' + prompt
+        trained_words = trained_words.replace('\\', '\\\\').strip()
         file_name = version_model_file['name'].replace('.safetensors', '_' + file_hash)
         char_data = f'\n{name}: >-\n  {trained_words}, <{model_type}:{file_name}:{weight}>\n'
         subfolder = 'Lora' if model_type == 'lora' else 'LyCORIS'
         file_path = f'models/{subfolder}/{file_name}.safetensors'
-
-    char_data = char_data.replace('\\', '\\\\').strip()
 
     print(f'Downloading {type_}')
     response = requests.get(download_url, stream=True)
