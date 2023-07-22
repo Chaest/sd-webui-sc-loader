@@ -36,6 +36,7 @@ queue_lock = threading.Lock()
 ui_elements = {}
 expected_characters_idxs = []
 hard_skip_toggled = False
+prompt_type = 'characters'
 
 
 def do_nothing():
@@ -548,14 +549,19 @@ def create_ui():
 
         return [(ui_component, 'Sc Loader', 'sc_loader')]
 
-def create_character(sc_file, char_name, civitai_url, prompt, weight):
-    if char_name in c.database['prompts']['characters']:
-        print(f'Character ({char_name}) already exists')
+def create_character(sc_file, name, civitai_url, prompt, weight):
+    global prompt_type
+    type_ = prompt_type[:-1]
+    type_cap = type_.capitalize()
+    c.load_db()
+    print(f'Adding {type_} {name}')
+    if name in c.database['prompts'][prompt_type]:
+        print(f'{type_cap} ({name}) already exists')
         return
 
-    print('Starting character creation')
-    path_to_char_file = f'{opts.sc_loader_config_path}/db/prompts/characters/{sc_file}'
-    civitai_url_regex = r'https://civitai\.com/models/(?P<id>\d+)/[^\[]+(\[(?P<pids>\d+(,\d+)*)\])?'
+    print(f'Starting {type_} creation')
+    path_to_file = f'{opts.sc_loader_config_path}/db/prompts/{prompt_type}/{sc_file}'
+    civitai_url_regex = r'https://civitai\.com/models/(?P<id>\d+)(/[^\[]+)?(\[(?P<pids>\d+(,\d+)*)\])?'
     m = re.match(civitai_url_regex, civitai_url)
     if not m:
         print(f'URL ({civitai_url}) is not valid')
@@ -574,13 +580,13 @@ def create_character(sc_file, char_name, civitai_url, prompt, weight):
     if version_model_file['type'] != 'Model':
         print('Invalid model type:', model_version['type'])
         return
-    if model_version['baseModel'] != 'SD 1.5':
+    if model_version['baseModel'] not in ('SD 1.5', 'Other'):
         print('Invalid base model:', model_version['baseModel'])
         return
 
     print('Building data')
     model_type = 'lora' if content['type'] == 'LORA' else ('lyco' if content['type'] != 'TextualInversion' else 'TextualInversion')
-    file_hash = version_model_file['hashes']['AutoV2']
+    file_hash = version_model_file['hashes'].get('AutoV2', content['creator'].get('username', 'wtf'))
     download_url = version_model_file['downloadUrl']
 
     if model_type == 'TextualInversion':
@@ -588,19 +594,20 @@ def create_character(sc_file, char_name, civitai_url, prompt, weight):
         trained_words = f'({file_name}:{weight})'
         if prompt:
             trained_words += ', ' + prompt
-        char_data = f'\n{char_name}: {trained_words}\n'
+        char_data = f'\n{name}: {trained_words}\n'
         file_path = f'embeddings/{file_name}.pt'
     else:
         trained_words = ', '.join([trained_word for idx, trained_word in enumerate(model_version['trainedWords']) if not pids or idx in pids])
         if prompt:
             trained_words += ', ' + prompt
         file_name = version_model_file['name'].replace('.safetensors', '_' + file_hash)
-        char_data = f'\n{char_name}: >-\n  {trained_words}, <{model_type}:{file_name}:{weight}>\n'
+        char_data = f'\n{name}: >-\n  {trained_words}, <{model_type}:{file_name}:{weight}>\n'
         subfolder = 'Lora' if model_type == 'lora' else 'LyCORIS'
         file_path = f'models/{subfolder}/{file_name}.safetensors'
 
+    char_data = char_data.replace('\\', '\\\\').strip()
 
-    print('Downloading character')
+    print(f'Downloading {type_}')
     response = requests.get(download_url, stream=True)
     response.raise_for_status()
     model_path = f'{os.getcwd()}/{file_path}'
@@ -611,39 +618,65 @@ def create_character(sc_file, char_name, civitai_url, prompt, weight):
                 fd.write(chunk)
     else:
         print('Model already present')
-    print('Character downloaded')
+    print(f'{type_cap} downloaded')
 
-    print(f'Adding character prompt to ({path_to_char_file})')
-    with open(path_to_char_file, 'a', encoding='utf-8') as sc_file:
+    print(f'Adding {type_} prompt to ({path_to_file})')
+    with open(path_to_file, 'a', encoding='utf-8') as sc_file:
         sc_file.write(char_data)
-    print('Character added')
+    print(f'{type_cap} {name} added')
+
+def get_prompt_files():
+    global prompt_type
+    print(prompt_type)
+    path_to_files = f'{opts.sc_loader_config_path}/db/prompts/{prompt_type}'
+    return [
+        file_name
+        for file_name in os.listdir(path_to_files)
+        if any(file_name.endswith(ext) for ext in ('.yaml', '.yml'))
+    ]
+
+def get_types():
+    path_to_types = f'{opts.sc_loader_config_path}/db/prompts'
+    return [
+        file_name
+        for file_name in os.listdir(path_to_types)
+        if os.path.isdir(path_to_types+'/'+file_name)
+    ]
 
 def create_character_creation_tab():
-    tab_name = 'char_creator'
+    global prompt_type
+    tab_name = 'prompt_creator'
     with gr.Blocks(analytics_enabled=False) as ui_component:
         with gr.Row(elem_id=f'{tab_name}_toprow', variant='compact'):
             with gr.Column(elem_id=f'{tab_name}_prompt_container', scale=6):
                 with gr.Row():
                     with gr.Column(scale=1):
                         with gr.Row():
-                            def get_char_files():
-                                path_to_char_files = f'{opts.sc_loader_config_path}/db/prompts/characters'
-                                return [
-                                    file_name
-                                    for file_name in os.listdir(path_to_char_files)
-                                    if any(file_name.endswith(ext) for ext in ('.yaml', '.yml'))
-                                ]
+                            type_folder = gr.Dropdown(
+                                label='Type',
+                                choices=get_types(),
+                                type='value'
+                            )
+                            create_refresh_button(
+                                type_folder,
+                                c.load_db,
+                                lambda: {'choices': get_types()},
+                                f'{tab_name}_refresh_type_folder'
+                            )
+                    with gr.Column(scale=1):
+                        with gr.Row():
                             char_file = gr.Dropdown(
                                 label='File',
-                                choices=get_char_files(),
+                                choices=get_prompt_files(),
                                 type='value'
                             )
                             create_refresh_button(
                                 char_file,
                                 c.load_db,
-                                lambda: {'choices': get_char_files()},
+                                lambda: {'choices': get_prompt_files()},
                                 f'{tab_name}_refresh_char_files'
                             )
+                with gr.Row():
                     with gr.Column(scale=2):
                         with gr.Row():
                             char_name = gr.Textbox(label='Name')
@@ -665,14 +698,28 @@ def create_character_creation_tab():
                         )
                 with gr.Row():
                     with gr.Column(scale=1):
-                        submit = gr.Button('Create character', elem_id=f'{tab_name}_generate', variant='primary')
+                        submit = gr.Button('Create prompt', elem_id=f'{tab_name}_generate', variant='primary')
 
                         submit.click(
                             fn=create_character,
                             inputs=[char_file, char_name, civitai_url, prompt, weight]
                         )
 
-        return [(ui_component, 'Character creation', 'char_creator')]
+
+        def ntm(x):
+            global prompt_type
+            prompt_type = x
+            print(x)
+            print(prompt_type)
+            return gr.update(choices=get_prompt_files())
+        type_folder.change(
+            fn=ntm,
+            inputs=[type_folder],
+            outputs=[char_file],
+            queue=False
+        )
+
+        return [(ui_component, 'Prompt creation', tab_name)]
 
 def create_ui_settings():
     section = ('sc_loader', 'Scenario loader')

@@ -1,3 +1,5 @@
+import os
+
 from modules.shared import opts
 
 from .config import load_dir_element
@@ -25,11 +27,17 @@ seed       = -1
 skip_model = False
 
 short_prompts = {'positive': '', 'negative': ''}
-version = '3.2.0'
+version = '3.3.0'
 
 def load_db():
     global database
     database = load_dir_element(opts.sc_loader_config_path + '/db', True)
+    path_to_types = f'{opts.sc_loader_config_path}/db/prompts'
+    for file_name in os.listdir(path_to_types):
+        if os.path.isdir(path_to_types + '/' + file_name):
+            suffix = ''.join((part[0] for part in file_name.split('_')))
+            for key, value in database['prompts'][file_name].items():
+                database['prompts'][suffix+'_'+key] = value
 
 def init():
     global scenario, batch, tags, hr, restore, upscaler, chars, sampler, steps, characters,\
