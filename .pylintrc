@@ -3,7 +3,14 @@ disable=logging-fstring-interpolation,
         missing-docstring,
         duplicate-code,
         invalid-name,
-        global-statement
+        global-statement,
+        import-error,
+        attribute-defined-outside-init,
+        too-many-instance-attributes,
+        bare-except,
+        line-too-long,
+        broad-exception-raised,
+        too-few-public-methods
 
 [FORMAT]
 max-line-length=150

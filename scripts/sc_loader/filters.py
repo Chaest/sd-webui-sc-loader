@@ -5,18 +5,18 @@ from importlib.util import spec_from_loader, module_from_spec
 
 from modules.shared import opts
 
-from . import context as c
+from . import context as c # pylint: disable=no-name-in-module
 
 def load_filters():
     module = load_filter_module(f'{opts.sc_loader_config_path}/filters.py')
-    funcs = getattr(module, f'get_filters', lambda _: {})(c)
+    funcs = getattr(module, 'get_filters', lambda _: {})(c)
     if len(funcs) == 0:
-        print(f'No filters loaded.')
+        print('No filters loaded.')
     return funcs
 
 def load_filter_module(path):
     if not os.path.exists(path):
-        print(f'No filters file found.')
+        print('No filters file found.')
         return None
 
     module_name = 'custom_filters'

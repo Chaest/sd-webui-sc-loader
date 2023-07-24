@@ -24,7 +24,7 @@ def load_txt_list(path):
 def path_to_name(path):
     return path.split('/')[-1].split('.')[0]
 
-def load_dir_element(path, root=False):
+def load_dir_element(path):
     data = {}
     for path_ in os.listdir(path):
         path_ = path + '/' + path_
@@ -32,7 +32,7 @@ def load_dir_element(path, root=False):
             data = merged_dicts(data, load_dir_element(path_))
         else:
             data = merged_dicts(data, load_file_element(path_))
-    return data if root else {path_to_name(path): data}
+    return data if path.split('/')[-1][0] == '_' else {path_to_name(path): data}
 
 def load_file_element(path):
     if not os.path.exists(path):

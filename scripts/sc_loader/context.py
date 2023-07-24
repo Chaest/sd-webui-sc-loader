@@ -1,8 +1,15 @@
+'''
+    A rather crappy but useful module to handle global variables, should be reworked.
+'''
+
 import os
 
 from modules.shared import opts
 
 from .config import load_dir_element
+
+version = '3.4.0'
+
 
 database   = None
 scenario   = None
@@ -22,17 +29,22 @@ nb_batches = None
 nb_repeats = None
 positive   = None
 negative   = None
+upscale_by = None
+hard_skip_toggled  = None
+denoising_strength = None
+expected_characters_idxs = []
 seed       = -1
 
 skip_model = False
 
 short_prompts = {'positive': '', 'negative': ''}
-version = '3.3.0'
+
+DB_DIR = '_db'
 
 def load_db():
     global database
-    database = load_dir_element(opts.sc_loader_config_path + '/db', True)
-    path_to_types = f'{opts.sc_loader_config_path}/db/prompts'
+    database = load_dir_element(f'{opts.sc_loader_config_path}/{DB_DIR}')
+    path_to_types = f'{opts.sc_loader_config_path}/{DB_DIR}/prompts'
     for file_name in os.listdir(path_to_types):
         if os.path.isdir(path_to_types + '/' + file_name):
             suffix = ''.join((part[0] for part in file_name.split('_')))
@@ -41,7 +53,8 @@ def load_db():
 
 def init():
     global scenario, batch, tags, hr, restore, upscaler, chars, sampler, steps, characters,\
-            cfg_scale, model, nb_iter, nb_batches, nb_repeats, seed, positive, negative
+            cfg_scale, model, nb_iter, nb_batches, nb_repeats, seed, positive, negative,\
+            denoising_strength, upscale_by, hard_skip_toggled, expected_characters_idxs
     load_db()
     scenario   = None
     batch      = None
@@ -60,4 +73,7 @@ def init():
     nb_repeats = None
     positive   = None
     negative   = None
+    upscale_by = None
+    hard_skip_toggled  = None
+    denoising_strength = None
     seed       = -1
