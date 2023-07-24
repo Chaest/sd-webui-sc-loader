@@ -13,7 +13,7 @@ from ..context import DB_DIR
 
 def output_result(f):
     def outputter(*args):
-        msg = f'Successfully added {args[0][:-1]} {args[1]}'
+        msg = f'Successfully added {args[5][:-1]} {args[1]}'
         try:
             f(*args)
         except:
@@ -60,7 +60,14 @@ def get_model_data(model_id, version):
     model_version = content['modelVersions'][version]
     version_model_file = model_version['files'][0]
     if version_model_file['type'] != 'Model':
-        raise Exception('Invalid model type:', model_version['type'])
+        if len(model_version['files']) > 1:
+            print('First file was invalid:', version_model_file['type'])
+            print('Trying second file')
+            version_model_file = model_version['files'][1]
+            if version_model_file['type'] != 'Model':
+                raise Exception('Invalid model type:', version_model_file['type'])
+        else:
+            raise Exception('Invalid model type:', version_model_file['type'])
     if model_version['baseModel'] not in ('SD 1.4', 'SD 1.5', 'Other'):
         raise Exception('Invalid base model:', model_version['baseModel'])
     return content, model_version, version_model_file

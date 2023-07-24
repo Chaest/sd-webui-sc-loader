@@ -15,6 +15,9 @@ def col():
         with gr.Row():
             yield None
 
+def get_prompts():
+    return [f'${prompt}' for prompt in c.database['prompts'].keys()]
+
 def get_models():
     return [
         '--- Lists ---',
@@ -64,13 +67,27 @@ class MainInputs(UiPart):
             self.negative = gr.Textbox(label='Negative')
         with col():
             self.tags = gr.Textbox(label='Tags')
+        with col():
+            self.prompt_finder = gr.Dropdown(
+                label='Prompt finder',
+                choices=get_prompts(),
+                type='value'
+            )
 
     def link_actions(self, after=False):
         if after:
             self.scenario.change(self.switch_sc, [self.scenario], [*self.parent.character_rows], queue=False)
 
     def reload_data(self):
-        return [self.model, self.scenario], [lambda: {'choices': get_models()}, lambda: {'choices': get_scenarios()}]
+        return [
+            self.model,
+            self.scenario,
+            self.prompt_finder
+        ], [
+            lambda: {'choices': get_models()},
+            lambda: {'choices': get_scenarios()},
+            lambda: {'choices': get_prompts()}
+        ]
 
     @property
     def components(self):
