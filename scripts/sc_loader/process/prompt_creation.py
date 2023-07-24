@@ -13,7 +13,7 @@ from ..context import DB_DIR
 
 def output_result(f):
     def outputter(*args):
-        msg = 'Successfully added'
+        msg = f'Successfully added {args[0][:-1]} {args[1]}'
         try:
             f(*args)
         except:
