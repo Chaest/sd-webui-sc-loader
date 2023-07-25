@@ -11,6 +11,16 @@ from modules.shared import opts
 from .. import context as c
 from ..context import DB_DIR
 
+TYPE_MAPPER = {
+    'LORA': 'lora',
+    'LoCon': 'lyco',
+    'TextualInversion': 'TextualInversion'
+}
+TYPE_TO_FOLDER = {
+    'lora': 'Lora',
+    'lyco': 'LyCORIS'
+}
+
 def output_result(f):
     def outputter(*args):
         msg = f'Successfully added {args[5][:-1]} {args[1]}'
@@ -74,7 +84,7 @@ def get_model_data(model_id, version):
 
 def build_data(name, model, version, file_data, pids, prompt, weight): # pylint: disable=too-many-arguments
     print('Building data')
-    model_type = 'lora' if model['type'] == 'LORA' else ('lyco' if model['type'] != 'TextualInversion' else 'TextualInversion')
+    model_type = TYPE_MAPPER[model['type']]
     file_hash = file_data['hashes'].get('AutoV2', model['creator'].get('username', 'wtf'))
     download_url = file_data['downloadUrl']
 
@@ -93,8 +103,7 @@ def build_data(name, model, version, file_data, pids, prompt, weight): # pylint:
         trained_words = trained_words.replace('\\', '\\\\').strip()
         file_name = file_data['name'].replace('.safetensors', '_' + file_hash)
         char_data = f'\n{name}: >-\n  {trained_words}, <{model_type}:{file_name}:{weight}>\n'
-        subfolder = 'Lora' if model_type == 'lora' else 'LyCORIS'
-        file_path = f'models/{subfolder}/{file_name}.safetensors'
+        file_path = f'models/{TYPE_TO_FOLDER[model_type]}/{file_name}.safetensors'
 
     return char_data, file_path, download_url
 

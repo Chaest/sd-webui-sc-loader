@@ -23,7 +23,6 @@ def expand_prompt(prompt):
     return expand_prompt(prompt) if '$' in prompt else prompt
 
 def build_prompts(scenario, characters):
-    build_short_prompt(scenario)
     chars_prompts = []
     chars_neg_prompts = []
     for i in range(len(scenario['characters'])):
@@ -46,19 +45,4 @@ def build_prompts(scenario, characters):
     return {
         'prompt': expand_prompt(positive_prompt),
         'negative_prompt': expand_prompt(negative_prompt)
-    }
-
-def build_short_prompt(scenario):
-    positive_prompt = '\n'.join((
-        f'[[Scenario Loader v{c.version}]]',
-        '## ' + datetime.today().strftime('%Y-%m-%d'),
-        scenario['prompts']['quality'] + ', ' + (c.positive or ''),
-        f'scenario: {c.scenario}',
-        '\n'.join([f'@{c.chars[idx]}' for idx, _ in enumerate(scenario['characters'])])
-    ))
-    negative_prompt = scenario['prompts']['negative'] + ', ' + (c.negative or '')
-
-    c.short_prompts = {
-        'positive': positive_prompt,
-        'negative': negative_prompt
     }

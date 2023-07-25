@@ -17,7 +17,7 @@ next_to_each_other:
       post: ''
 
   base_payload:
-    alwayson_scripts: {{ 'next_each_other' | cn_pose('1:12,1:12', '0:0-5,0:5-12', '0.8,0.8') }}
+    alwayson_scripts:
       controlnet:
         args:
           - input_image: next_each_other

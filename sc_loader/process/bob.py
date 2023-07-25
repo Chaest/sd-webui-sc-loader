@@ -15,7 +15,7 @@ from modules.shared import opts
 from .. import context as c
 from ..payload import create_payloads
 
-from .sd import txt2img, create_infotext
+from .sd import txt2img
 from . import *
 
 
@@ -56,9 +56,6 @@ def bobing(_, *inputs):
         old_clip_skip_value = opts.CLIP_stop_at_last_layers
         opts.CLIP_stop_at_last_layers = int(get_input(CLIP_SKIP))
 
-    true_create_infotext = processing.create_infotext
-    processing.create_infotext = create_infotext
-
     gallery = []
     first_gen = None
     try:
@@ -82,8 +79,6 @@ def bobing(_, *inputs):
                 json.dump(payload, fp, indent=4)
     except:
         print(traceback.format_exc())
-
-    processing.create_infotext = true_create_infotext
 
     if get_input(USE_CLIP_SKIP):
         opts.CLIP_stop_at_last_layers = old_clip_skip_value

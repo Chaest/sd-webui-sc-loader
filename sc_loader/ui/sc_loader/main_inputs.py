@@ -68,8 +68,8 @@ class MainInputs(UiPart):
         with col():
             self.tags = gr.Textbox(label='Tags')
         with col():
-            self.prompt_finder = gr.Dropdown(
-                label='Prompt finder',
+            self.expander_finder = gr.Dropdown(
+                label='Expander finder',
                 choices=get_prompts(),
                 type='value'
             )
@@ -82,7 +82,7 @@ class MainInputs(UiPart):
         return [
             self.model,
             self.scenario,
-            self.prompt_finder
+            self.expander_finder
         ], [
             lambda: {'choices': get_models()},
             lambda: {'choices': get_scenarios()},

@@ -11,11 +11,11 @@ def get_filters(context):
 
 def build_base_sc(general, width, height):
     return {
-        'characters': ['char'],
+        'characters': ['character1'],
         'prompts': {
-            'quality': '$ezpos',
+            'quality': '$positive',
             'general': general,
-            'negative': '$ezneg, $not_naked',
+            'negative': '$negative',
             'char': {
                 'pre': '',
                 'post': ''
