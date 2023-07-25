@@ -3,12 +3,23 @@ from datetime import datetime
 
 from .. import context as c
 
+anti_stack_overflow = ''
+
+def remove(str, olds):
+    for old in olds:
+        str = str.replace(old, '')
+    return str
+
 def expand_prompt(prompt):
-    expanders = [word for word in prompt.replace('\n', ' ').replace(',', ' ').split(' ') if word and word[0] == '$']
+    global anti_stack_overflow
+    expanders = [word for word in remove(prompt.replace('\n', ' ').replace(',', ' '), '()[]').split(' ') if word and word[0] == '$']
     for expander in expanders:
         expander_value = c.database['prompts'][expander[1:]]
         expanded_value = expander_value if isinstance(expander_value, str) else random.choice(expander_value)
         prompt = prompt.replace(expander, expanded_value)
+    if anti_stack_overflow == prompt:
+        return prompt
+    anti_stack_overflow = prompt
     return expand_prompt(prompt) if '$' in prompt else prompt
 
 def build_prompts(scenario, characters):
