@@ -7,6 +7,8 @@ from modules.shared import opts
 
 from .. import context as c
 
+OPENPOSE_MODEL = 'control_sd15_openpose [fef5e48e]'
+
 def load_img_str(img_path):
     return base64.b64encode(cv2.imencode('.png', cv2.imread(img_path))[1]).decode('utf-8') # pylint: disable=no-member
 
@@ -28,7 +30,7 @@ def update_cn_data(payload):
     cn_units = cn_data['args']
     cn_data['args'] = [
         {
-            'model': 'control_sd15_openpose [fef5e48e]',
+            'model': OPENPOSE_MODEL,
             **unit,
             'input_image': pose_to_img(get_pose(unit))
         }

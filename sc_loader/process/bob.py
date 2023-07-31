@@ -8,7 +8,6 @@ import json
 from datetime import datetime
 import traceback
 
-from modules import processing
 from modules.ui import plaintext_to_html
 from modules.shared import opts
 

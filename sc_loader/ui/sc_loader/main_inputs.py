@@ -16,22 +16,22 @@ def col():
             yield None
 
 def get_prompts():
-    return [f'${prompt}' for prompt in c.database['prompts'].keys()]
+    return sorted([f'${prompt}' for prompt in c.database['prompts'].keys()])
 
 def get_models():
     return [
         '--- Lists ---',
-        *list(c.database['series']['models'].keys()),
+        *sorted(list(c.database['series']['models'].keys())),
         '--- Models ---',
-        *[model.split('.')[0] for model in sd_models.checkpoint_tiles()]
+        *sorted([model.split('.')[0] for model in sd_models.checkpoint_tiles()])
     ]
 
 def get_scenarios():
     return [
         '--- Lists ---',
-        *list(c.database['series']['scenarios'].keys()),
+        *sorted(list(c.database['series']['scenarios'].keys())),
         '--- Scenarios ---',
-        *list(c.database['scenarios'].keys())
+        *sorted(list(c.database['scenarios'].keys()))
     ]
 
 class MainInputs(UiPart):

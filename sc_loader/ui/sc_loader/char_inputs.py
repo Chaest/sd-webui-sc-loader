@@ -7,9 +7,9 @@ from ..ui_part import UiPart
 def get_chars():
     return [
         '--- Lists ---',
-        *list(c.database['series']['characters'].keys()),
+        *sorted(list(c.database['series']['characters'].keys())),
         '--- Scenarios ---',
-        *list(c.database['prompts']['characters'].keys())
+        *sorted(list(c.database['prompts']['characters'].keys()))
     ]
 
 class CharInputs(UiPart):

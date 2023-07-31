@@ -6,6 +6,7 @@ from .controlnet import update_cn_data
 from .ui_inputs_data import apply_ui_inputs
 from .prompt import build_prompts
 
+MODEL_IDX = 0
 DEFAULT_PAYLOAD_DATA = {
     'steps': 35,
     'cfg_scale': 7.5,
@@ -22,17 +23,17 @@ DEFAULT_PAYLOAD_DATA = {
 def create_payloads():
     skipped_models = []
     for coupling in gen_couplings():
-        if coupling[0] in skipped_models:
-            print(skipped_models)
+        if coupling[MODEL_IDX] in skipped_models:
             continue
         for payload in create_payloads_for_repeats(*coupling):
+            c.current_payload = payload
             if c.skip_model:
-                skipped_models.append(payload['override_settings']['sd_model_checkpoint'])
+                skipped_models.append(c.skipped_model)
                 c.skip_model = False
             if payload['override_settings']['sd_model_checkpoint'] in skipped_models:
-                print('in', skipped_models)
                 continue
             yield payload
+    c.current_payload = None
 
 def create_payloads_for_repeats(model, scenario, *characters):
     for _ in range(c.nb_repeats):

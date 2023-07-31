@@ -66,9 +66,10 @@ def rec_add_dict(dest, src, path):
             type_match =(type(dest[k]), type(v))
             if type_match == (list, list):
                 dest[k] += v
-            if type_match == (dict, dict):
+            elif type_match == (dict, dict):
                 rec_add_dict(dest[k], v, path + [k])
-            raise Exception(f'Trying to replace existing value for key {k} at {" -> ".join(path)}.')
+            else:
+                raise Exception(f'Trying to replace existing value for key {k} at {" -> ".join(path)}.')
 
 def load_cfg(cfg_path):
     if not cfg_path.endswith('.yaml'):

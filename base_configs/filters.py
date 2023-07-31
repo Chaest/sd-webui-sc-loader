@@ -16,7 +16,7 @@ def build_base_sc(general, width, height):
             'quality': '$positive',
             'general': general,
             'negative': '$negative',
-            'char': {
+            'character1': {
                 'pre': '',
                 'post': ''
             }

@@ -8,12 +8,9 @@ import copy
 import gradio as gr
 
 from modules import scripts, shared
-from modules import processing, ui, sd_samplers_common, generation_parameters_copypaste
+from modules import processing, ui
 from modules.ui import plaintext_to_html
-from modules.processing import program_version
 from modules.shared import opts
-
-from .. import context as c
 
 default_args = None
 

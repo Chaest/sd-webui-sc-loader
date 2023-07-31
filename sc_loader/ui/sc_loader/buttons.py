@@ -19,7 +19,7 @@ class Buttons(UiPart):
             shared.state.interrupt()
 
         def skip_model():
-            c.skip_model = True
+            c.skip()
             shared.state.skip()
             shared.state.interrupt()
 

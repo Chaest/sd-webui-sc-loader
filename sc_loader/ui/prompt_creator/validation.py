@@ -1,7 +1,7 @@
 import gradio as gr
 
 from ..ui_part import UiPart
-from ...process.prompt_creation import create_character
+from ...process.expander_creation import create_character
 
 class Validation(UiPart):
     def build_components(self):
