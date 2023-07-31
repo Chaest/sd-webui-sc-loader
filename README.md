@@ -110,8 +110,6 @@ Lycoris are added to the `LyCORIS` folder.
 
 You can adjust the weight of the model using the model weight. (`(embedding:<weight>)` for embeddings)
 
-This currently only accepts SD 1.4 and SD 1.5 models. This will be changed to be adjustable in the settings soon.
-
 You can add **additional prompts** using the corresponding field.
 
 <ins>For more complex models:</ins>

@@ -76,8 +76,6 @@ def get_model_data(model_id, version):
                 raise Exception('Invalid model type:', version_model_file['type'])
         else:
             raise Exception('Invalid model type:', version_model_file['type'])
-    if model_version['baseModel'] not in ('SD 1.4', 'SD 1.5', 'Other'):
-        raise Exception('Invalid base model:', model_version['baseModel'])
     return content, model_version, version_model_file
 
 def build_data(name, model, version, file_data, pids, prompt, weight): # pylint: disable=too-many-arguments

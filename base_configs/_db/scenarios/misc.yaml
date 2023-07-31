@@ -37,3 +37,18 @@ next_to_each_other:
 show: {{ '' | build_show_sc(512, 512) }}
 portrait: {{ '' | build_show_sc(512, 768) }}
 landscape: {{ '' | build_show_sc(768, 512) }}
+
+#portrait:
+#  characters:
+#    - character1
+
+#  prompts:
+#    quality: $positive
+#    general: ''
+#    negative: $negative, $sfw
+#    character1:
+#      pre: ''
+#      post: ''
+#
+#  base_payload:
+#    height: 768
