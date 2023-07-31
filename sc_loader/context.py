@@ -54,15 +54,15 @@ def load_db():
                 database['prompts'][suffix+'_'+key] = value
 
 def skip():
-    global current_payload, skipped_model, skip_model
+    global skipped_model, skip_model
     skip_model = True
-    skipped_model = current_payload['override_settings']['sd_model_checkpoint']
+    skipped_model = current_payload['override_settings']['sd_model_checkpoint'] # pylint: disable=unsubscriptable-object
 
 def init():
     global scenario, batch, tags, hr, restore, upscaler, chars, sampler, steps, characters,\
             cfg_scale, model, nb_iter, nb_batches, nb_repeats, seed, positive, negative,\
-            denoising_strength, upscale_by, hard_skip_toggled, expected_characters_idxs,\
-            current_payload, skipped_model
+            denoising_strength, upscale_by, hard_skip_toggled, current_payload,\
+            skipped_model
     load_db()
     scenario   = None
     batch      = None

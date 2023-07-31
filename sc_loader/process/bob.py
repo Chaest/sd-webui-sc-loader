@@ -15,7 +15,7 @@ from .. import context as c
 from ..payload import create_payloads
 
 from .sd import txt2img
-from . import *
+from . import * # pylint: disable=wildcard-import
 
 
 def update_context(inputs):

@@ -4,8 +4,6 @@ import traceback
 
 import requests
 
-import gradio as gr
-
 from modules.shared import opts
 
 from .. import context as c
@@ -33,7 +31,7 @@ def output_result(f):
     return outputter
 
 @output_result
-def create_character(sc_file, name, civitai_url, prompt, weight, prompt_type): # pylint: disable=too-many-arguments
+def create_character(sc_file, name, civitai_url, prompt, weight, prompt_type): # pylint: disable=too-many-arguments,too-many-locals
     type_ = prompt_type[:-1]
     c.load_db()
     print(f'Adding {type_} {name}')

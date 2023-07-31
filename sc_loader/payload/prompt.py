@@ -1,14 +1,13 @@
 import random
-from datetime import datetime
 
 from .. import context as c
 
 anti_stack_overflow = ''
 
-def remove(str, olds):
+def remove(str_, olds):
     for old in olds:
-        str = str.replace(old, '')
-    return str
+        str_ = str_.replace(old, '')
+    return str_
 
 def expand_prompt(prompt):
     global anti_stack_overflow

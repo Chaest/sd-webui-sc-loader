@@ -10,7 +10,8 @@ disable=logging-fstring-interpolation,
         bare-except,
         line-too-long,
         broad-exception-raised,
-        too-few-public-methods
+        too-few-public-methods,
+        relative-beyond-top-level
 
 [FORMAT]
 max-line-length=150
