@@ -38,7 +38,7 @@ def build_prompts(scenario, characters):
         scenario['prompts']['general'],
         c.positive or ''
     ))
-    positive_prompt = ' AND '.join([positive_prompt, *chars_prompts])
+    positive_prompt = ' AND '.join([positive_prompt, *chars_prompts]) if len(chars_prompts) != 1 else positive_prompt + ', ' + chars_prompts[0]
     negative_prompt = scenario['prompts']['negative'] + ',' + (c.negative or '') + ',' + ','.join(chars_neg_prompts)
 
     return {

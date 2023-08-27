@@ -8,7 +8,7 @@ def get_chars():
     return [
         '--- Lists ---',
         *sorted(list(c.database['series']['characters'].keys())),
-        '--- Scenarios ---',
+        '--- Characters ---',
         *sorted(list(c.database['prompts']['characters'].keys()))
     ]
 

@@ -70,7 +70,7 @@ def bobing(_, *inputs):
 
             date = datetime.today().strftime('%Y-%m-%d')
             samples_dir = opts.outdir_txt2img_samples + '/' + date
-            last_file_name = sorted(os.listdir(samples_dir))[-1].split('.')[0]
+            last_file_name = sorted([file_ for file_ in os.listdir(samples_dir) if file_.endswith('.png')])[-1].split('.')[0]
 
             model = payload['override_settings']['sd_model_checkpoint']
             with open(f'{samples_dir}/{last_file_name}a - {model}.json', 'w', encoding='utf-8') as fp:

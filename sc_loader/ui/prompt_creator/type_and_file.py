@@ -27,7 +27,7 @@ class TypeAndFile(UiPart):
         return [
             file_name
             for file_name in os.listdir(path_to_types)
-            if os.path.isdir(path_to_types+'/'+file_name)
+            if os.path.isdir(path_to_types+'/'+file_name) and file_name[0] != '_'
         ]
 
     def update_prompt_type(self, prompt_type):
