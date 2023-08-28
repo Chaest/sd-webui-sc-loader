@@ -14,11 +14,11 @@ def url_data_dict(civitai_url):
 
 def url_data(type_, civitai_url):
     print(f'Starting {type_} creation')
-    url_data = url_data_dict(civitai_url)
+    data = url_data_dict(civitai_url)
 
-    model_id = url_data['id']
-    pids_str = url_data.get('pids')
-    version_str = url_data.get('version')
+    model_id = data['id']
+    pids_str = data.get('pids')
+    version_str = data.get('version')
 
     pids = [int(pid) for pid in pids_str.split(',')] if pids_str else []
     version = int(version_str) if version_str else 0

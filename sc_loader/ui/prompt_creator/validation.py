@@ -20,6 +20,7 @@ class Validation(UiPart):
                 self.parent.components['char_name'],
                 self.parent.components['civitai_url'],
                 self.parent.components['prompt'],
+                self.parent.components['negative_prompt'],
                 self.parent.components['weight'],
                 self.parent.components['type_folder']
             ],

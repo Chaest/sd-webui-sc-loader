@@ -5,8 +5,6 @@ from .name_and_url import NameAndUrl
 from .additionnal_inputs import AdditionnalInputs
 from .validation import Validation
 
-from ... import context as c
-
 class PromptCreatorTab:
     tab_name = 'prompt_creator'
     tab_title = 'Prompt creation'

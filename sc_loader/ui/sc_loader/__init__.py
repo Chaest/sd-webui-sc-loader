@@ -32,7 +32,8 @@ class ScLoaderTab:
         return [
             gr.Label(visible=False),
             *[self.components[component_key] for component_key in COMPONENT_ARG_ORDER],
-            *self.characters
+            *self.characters,
+            *self.char_prompts
         ]
 
     def handle_ui_part(self, part_cls):
@@ -45,7 +46,7 @@ class ScLoaderTab:
 
     def handle_char_part(self):
         part = CharInputs(self)
-        self.characters, self.character_rows = part.build()
+        self.characters, self.char_prompts, self.character_rows = part.build()
         components, methods = part.reload_data()
         self.components_to_refresh += components
         self.methods_to_refresh_them += methods
@@ -66,7 +67,7 @@ class ScLoaderTab:
                     self.handle_ui_part(Buttons)
                     self.handle_ui_part(BatchSliders)
 
-        with gr.Row().style(equal_height=False):
+        with gr.Row(equal_height=False):
             with gr.Column(variant='compact'):
                 self.handle_ui_part(RestoreAndHires)
                 self.handle_ui_part(ClipAndConfig)

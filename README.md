@@ -187,8 +187,6 @@ rnd:
  - long hair
 ```
 
-They can only be used in the context of the scenario loader though. **They will not work on the txt2img or img2img prompts.**
-
 When creating subfolders, the prompts will be added using the initials of the folder name.
 
 Examples:

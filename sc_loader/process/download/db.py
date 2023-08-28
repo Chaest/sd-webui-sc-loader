@@ -1,6 +1,7 @@
 from modules.shared import opts
 
 from ...context import DB_DIR
+from .utils import normalized_name
 
 def add_prompt(sc_file, name, prompt, prompt_type, type_):
     path_to_file = f'{opts.sc_loader_config_path}/{DB_DIR}/prompts/{prompt_type}/{sc_file}'
@@ -9,5 +10,11 @@ def add_prompt(sc_file, name, prompt, prompt_type, type_):
         sc_fd.write(prompt)
     print(f'{type_.capitalize()} {name} added')
 
-def get_wildcard_path(civitai_data, prompt_type):
-    return f'{opts.sc_loader_config_path}/{DB_DIR}/prompts/{prompt_type}/_wc_' + civitai_data['name'].replace(' ', '_')
+def get_wildcard_path(civitai_data):
+    return f'{opts.sc_loader_config_path}/{DB_DIR}/prompts/wild_cards/_wc_' + normalized_name(civitai_data['name'])
+
+def get_poses_path(civitai_data):
+    return f'{opts.sc_loader_config_path}/poses/' + normalized_name(civitai_data['name'])
+
+def get_batches_path(batch_name):
+    return f'{opts.sc_loader_config_path}/{DB_DIR}/batches/{batch_name}.txt'

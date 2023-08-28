@@ -28,6 +28,8 @@ def get_models():
 
 def get_scenarios():
     return [
+        '--- Pages ---',
+        *sorted(list(c.database.get('pages', {}).keys())),
         '--- Lists ---',
         *sorted(list(c.database['series']['scenarios'].keys())),
         '--- Scenarios ---',
@@ -37,9 +39,12 @@ def get_scenarios():
 class MainInputs(UiPart):
     def switch_sc(self, scenario):
         try:
-            data = c.database['scenarios'][c.database['series']['scenarios'][scenario][0]]
+            data = c.database['pages'][scenario]
         except KeyError:
-            data = c.database['scenarios'][scenario]
+            try:
+                data = c.database['scenarios'][c.database['series']['scenarios'][scenario][0]]
+            except KeyError:
+                data = c.database['scenarios'][scenario]
 
         expected_characters = data['characters']
         c.expected_characters_idxs = [c.database['character_types'].index(character) for character in expected_characters]

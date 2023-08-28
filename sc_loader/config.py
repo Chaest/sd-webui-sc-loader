@@ -15,8 +15,12 @@ def load_yaml_dict(path):
     return {}
 
 def load_file_as_str(path):
-    with open(path, 'r', encoding='utf-8') as file_:
-        return file_.read()
+    try:
+        with open(path, 'r', encoding='utf-8') as file_:
+            return file_.read()
+    except:
+        print(f'[ERROR] Could not read {path}')
+        return ''
 
 def load_txt_list(path):
     return load_file_as_str(path).strip().replace('\r', '').split('\n')

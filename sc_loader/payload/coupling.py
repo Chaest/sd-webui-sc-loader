@@ -1,6 +1,6 @@
 from .. import context as c
 
-def gen_couplings():
+def gen_couplings(page=False):
     '''
         The goal of gen_coupling is to generate the multiplicative effect of series
         For the series:
@@ -28,7 +28,7 @@ def gen_couplings():
             m2 - s2 - c2 - c4
     '''
     new_lists = []
-    series = gen_series()
+    series = gen_series(page)
     nb_coupling = get_nb_coupling(series)
     for idx, list_ in enumerate(series):
         len_so_far = len_pn(series, idx)
@@ -37,7 +37,10 @@ def gen_couplings():
         new_lists.append(grown_list * len_so_far)
     return list(zip(*new_lists))
 
-def gen_series():
+def gen_series(page):
+    return gen_page_series() if page else gen_scenario_series()
+
+def gen_scenario_series():
     models = c.database['series'].get('models', {}).get(c.model, [c.model])
     scenario_names = c.database['series'].get('scenarios', {}).get(c.scenario, [c.scenario])
     scenarios = [c.database['scenarios'][scenario_name] for scenario_name in scenario_names]
@@ -46,6 +49,16 @@ def gen_series():
         for character_idx in range(len(scenarios[0]['characters']))
     ]
     return [models, scenarios, *characters_lists]
+
+def gen_page_series():
+    page = c.database['pages'][c.scenario]
+    scenarios = [c.database['scenarios'][scenario_name] for scenario_name in page['scenarios']]
+    models = c.database['series'].get('models', {}).get(c.model, [c.model])
+    characters_lists = [
+        c.database['series'].get('characters', {}).get(c.chars[character_idx], [c.chars[character_idx]])
+        for character_idx in range(len(page['characters']))
+    ]
+    return [models, *characters_lists, scenarios]
 
 def get_nb_coupling(series):
     list_ = [len(input_list) for input_list in series]

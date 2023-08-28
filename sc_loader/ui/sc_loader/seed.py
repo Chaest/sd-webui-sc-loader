@@ -9,7 +9,6 @@ class Seed(UiPart):
     def build_components(self):
         with FormRow(variant='compact'):
             self.seed = gr.Number(label='Seed', value=-1)
-            self.seed.style(container=False)
 
     @property
     def components(self):

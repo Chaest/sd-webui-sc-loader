@@ -4,7 +4,8 @@ import requests
 
 DEFAULT_EXPECTED_TYPE = 'Model'
 MODEL_TO_EXPECTED_TYPE = {
-    'Wildcards': 'Archive'
+    'Wildcards': 'Archive',
+    'Poses': 'Archive'
 }
 
 def model_data(model_id, version):
@@ -37,9 +38,25 @@ def download_model(download_url, file_path, type_):
     else:
         print('Model already present')
 
+def download_base_model(download_url, file_path):
+    print(f'Downloading base model')
+
+    response = requests.get(download_url, stream=True, timeout=30)
+    response.raise_for_status()
+    model_path = f'{os.getcwd()}/{file_path}'
+
+    print('Destination:', model_path)
+    if not os.path.exists(model_path):
+        with open(model_path, 'wb') as fd:
+            for chunk in response.iter_content(chunk_size=8192):
+                fd.write(chunk)
+        print(f'Base model downloaded')
+    else:
+        print('Model already present')
+
 def download_wildcards(url, folder):
-    print(f'Downloading wildcard')
-    response = requests.get(url, stream=True)
+    print('Downloading wildcard')
+    response = requests.get(url, stream=True, timeout=30)
     response.raise_for_status()
 
     zip_path = os.path.join(os.getcwd(), 'temp.zip')
@@ -54,7 +71,26 @@ def download_wildcards(url, folder):
         zip_ref.extractall(folder)
 
     os.remove(zip_path)
-    print(f'Wildcard downloaded')
+    print('Wildcard downloaded')
+
+def download_poses(url, folder):
+    print('Downloading poses')
+    response = requests.get(url, stream=True, timeout=30)
+    response.raise_for_status()
+
+    zip_path = os.path.join(os.getcwd(), 'temp.zip')
+    with open(zip_path, 'wb') as file:
+        for chunk in response.iter_content(chunk_size=8192):
+            file.write(chunk)
+
+    if not os.path.exists(folder):
+        os.makedirs(folder)
+
+    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+        zip_ref.extractall(folder)
+
+    os.remove(zip_path)
+    print('Poses downloaded')
 
 def find_kv(key, value, list_):
     return (list(filter(lambda e: e[key] == value, list_)) or [None])[0]
