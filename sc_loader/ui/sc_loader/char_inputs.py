@@ -7,7 +7,7 @@ from ..ui_part import UiPart
 def get_chars():
     return [
         '--- Lists ---',
-        *sorted(list(c.database['series']['characters'].keys())),
+        *sorted(list(c.database['series'].get('characters', {}).keys())),
         '--- Characters ---',
         *sorted(list(c.database['prompts']['characters'].keys()))
     ]
