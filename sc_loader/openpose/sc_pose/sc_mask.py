@@ -1,5 +1,7 @@
 import numpy as np
 
+from .common import DEFAULT_RADIUS
+
 CONNECTIONS = (
     ( 'nose',           'neck'           ),
     ( 'nose',           'right_eye'      ),
@@ -32,7 +34,7 @@ def create_people_mask(data, rads, h, w):
     max_layer = 0
 
     for person_id, person in enumerate(data['people']):
-        radius = rads[person_id]
+        radius = rads[person_id] if person_id < len(rads) else DEFAULT_RADIUS
         person_parts = person['parts']
 
         nmax = update_masks_for_person_points(person_id, person_parts, radius, h, w, mask, distance_mask, layer_mask)

@@ -5,12 +5,11 @@ import base64
 import cv2
 import numpy as np
 
-from .default_data import connect_color, connect_keypoints, def_rel_keypoints
+from .default_data import connect_color, connect_keypoints, def_rel_keypoints, DEFAULT_RADIUS
 from .mask import create_people_masks
 from .. import context as c
 
 ADD_DEFAULT = False
-DEFAULT_RADIUS = 60
 
 def from_json(json_path, payload):
     with open(json_path, 'r', encoding='utf-8') as f:

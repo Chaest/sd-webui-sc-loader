@@ -1,3 +1,5 @@
+from ..default_data import DEFAULT_RADIUS
+
 COLORS = {
     'nose': [0, 0, 255],
     'neck': [255, 0, 0],
@@ -40,5 +42,3 @@ CONNECTIONS = (
     ( 'right_knee',     'right_ankle'    ),
     ( 'left_knee',      'left_ankle'     ),
 )
-
-DEFAULT_RADIUS = 60

@@ -15,9 +15,12 @@ Before anything:
     * [Database](#database)
   * [Tabs](#tabs)
     * [Sc Loader](#sc-loader)
-    * [Prompt creator](#prompt-creator)
+    * [Expander creation](#expander-creation)
+    * [Sc Tools](#sc-tools)
+    * [Sc DB Edit](#sc-db-edit)
   * [Using the database](#using-the-database)
     * [Character types](#character-types)
+    * [Prompts blacklist](#prompts-blacklist)
     * [Characters](#characters)
     * [Expanders](#expanders)
     * [Scenarios](#scenarios)
@@ -91,7 +94,7 @@ Tags is just a list of comma separated string the can be used inside scenario to
 
 The rest should pretty straight forward. They the classical options. If an option is accompanied by a checkbox for override, it means it's not used by default (ensuring the scenarios' options are preferred) so you have to tick them to use them.
 
-### Prompt creator
+### Expander creation
 
 The prompt creator tab should look like this:
 ![prompttab](imgs/creatortab.png)
@@ -108,9 +111,9 @@ Downloaded models have the AutoV2 hash appended to them if given, otherwise the 
 
 Lycoris are added to the `LyCORIS` folder.
 
-You can adjust the weight of the model using the model weight. (`(embedding:<weight>)` for embeddings)
+You can adjust the weight of the model using the model weight.
 
-You can add **additional prompts** using the corresponding field.
+You can add **additional prompts** using the corresponding fields.
 
 <ins>For more complex models:</ins>
 
@@ -142,6 +145,10 @@ Please remember it starts at 0.
 Character types are the types of character that can be used in a scenario. It a simple file at the root of the database. Each line is a type of character.
 
 They are used to generate the corresponding field in the UI and a reload will be needed if more character types are added. So feel free to add as many as you think you will need.
+
+### Prompts blacklist
+
+A list of word to blacklist from triggerwords when creating an expander.
 
 ### Characters
 
@@ -176,6 +183,14 @@ long hair
 
 Results in the same key/value pair as the one defined in the previous example.
 
+Dicts are also supported to nest expanders:
+```yaml
+my:
+  expander: myprompt # used with $my.expander
+```
+
+
+
 **Expanders can be used in prompts using a `$` prefix.**
 
 Expanders can be used inside other expanders:
@@ -187,17 +202,17 @@ rnd:
  - long hair
 ```
 
-When creating subfolders, the prompts will be added using the initials of the folder name.
+When creating subfolders, the prompts will be added using the four first letters of each underscore separated word of the folder name.
 
 Examples:
 
 ![example1](imgs/example_sub_prompt.png)
 
-Gives the expander: `$c_clothes`
+Gives the expander: `$clot_clothes`
 
 ![example1](imgs/example_sub_prompt2.png)
 
-Gives the expander: `$mc_clothes`
+Gives the expander: `$moreclot_clothes`
 
 ### Scenarios
 
@@ -207,9 +222,15 @@ You can learn how to create one [here](docs/scenario_creation.md) or [here](#pro
 
 You can learn how to use one [here](#sc-loader).
 
+### Pages
+
+Pages are special kind of scenarios made of normal scenario that will create comics like pages.
+
+You can learn how to create one [here](docs/page_creation.md).
+
 ### Series
 
-Series are list defined as `.txt` files in their corresponding folder within the database `series` folder.
+Series are lists defined as `.txt` files in their corresponding folder within the database `series` folder.
 
 Series can be of four types:
  - Models: list of models to run a scenario on
@@ -280,4 +301,4 @@ Yaml and JSONs files are loaded using the [sonotoria lib](https://pypi.org/proje
 
 ### Filters
 
-Any jinja2 filters can be added inside the `filters.py` file. Inside it is referenced the context at the state of the creation of the payload. It is mostly useful to access tags. A filter will be any function added in the dictionary returned by the `get_filters` function. You don't need to reload the app to reload the filters, they are always reloaded.
+Any jinja2 filters can be added inside the `filters.py` file. Inside it is referenced the context at the state of the creation of the payload. A filter will be any function added in the dictionary returned by the `get_filters` function. You don't need to reload the app to reload the filters, they are always reloaded.

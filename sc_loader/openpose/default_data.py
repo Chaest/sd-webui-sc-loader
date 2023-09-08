@@ -1,5 +1,7 @@
 from ..utils import to_vars, Empty as _
 
+DEFAULT_RADIUS = 60
+
 data = (
     ( 'default_keypoints', 'connect_keypoints', 'connect_color'   ),
     (     [241, 77],            [0, 1],           [0, 0, 255]     ),

@@ -120,15 +120,36 @@ Now the intersting part is that you can add parameters for scripts such as `cont
 
 As long as those scripts are able to handle an API call, this should work.
 
-On that regard, I used to use [that version](https://github.com/ashen-sensored/stable-diffusion-webui-two-shot) of latent couple/two shot. Using it I would have to change manually the tab in the UI to use the rectangle sections. So I made a fork to solve that problem.
-
-My fork also handles multiple rectable per section as shown here:
+On that regard, there is smaller version of latent couple, "Sc Latent Couple", natively shipped with this extension. It does not handle masks, but it handles multiple rectable per section as shown here:
 
 ![multrect](../imgs/multrect.png)
 
-You can access and install this fork using [this link](https://github.com/Chaest/stable-diffusion-webui-two-shot).
+It also tries to create masks automatically when providing a pose as a json (or yaml sc pose) file. You can use those masks by using `@<person idx>` instead of a rectangle region (in divisions). You just put an `_` for the corresponding position.
 
-If you want to know exactly how to use every paramters for a script, I advise you take a look at their individual documentations. As for the three scripts mentionned above here is a full example:
+![Alt text](../imgs/jsonmask.png)
+
+You can also migrate a JSON pose to an ScPose via the Sc Tool tab. Then you can add use the notion of layer to generate better masks.
+
+![Alt text](../imgs/toscpose.png)
+
+```yaml
+      ...
+      right_elbow:
+        coordinates:
+          - 222.83271428696298
+          - 351.6621974389274
+        layer: 1 # put one layer above
+      right_wrist:
+        coordinates:
+          - 336.4652973245809
+          - 404.12523615540107
+        layer: 1 # same
+      ...
+```
+
+![Alt text](../imgs/layered.png)
+
+If you want to know exactly how to use every paramaters for a script, I advise you take a look at their individual documentations. As for the three scripts mentionned above here is a full example:
 
 ```yaml
 portrait_scenario:

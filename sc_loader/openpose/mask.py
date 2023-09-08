@@ -1,6 +1,6 @@
 import numpy as np
 
-from .default_data import connect_keypoints
+from .default_data import connect_keypoints, DEFAULT_RADIUS
 
 def create_people_masks(data, rads, h, w, weigth):
     return split_masks(data['people'], h, w, weigth, create_people_mask(data, rads, h, w))
@@ -21,7 +21,7 @@ def create_people_mask(data, rads, h, w):
     mask = np.zeros((h, w), dtype=np.int)
     for person_id, person in enumerate(data['people']):
         keypoints = np.array(person['pose_keypoints_2d']).reshape(-1, 3)
-        radius = rads[person_id]
+        radius = rads[person_id] if person_id < len(rads) else DEFAULT_RADIUS
 
         for x, y, c in keypoints:
             if c == 0:
