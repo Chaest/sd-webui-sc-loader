@@ -8,7 +8,7 @@ from modules.shared import opts
 
 from .config import load_dir_element
 
-version = '5.0.1'
+version = '5.0.2'
 
 
 database     = None

@@ -5,7 +5,8 @@ import requests
 DEFAULT_EXPECTED_TYPE = 'Model'
 MODEL_TO_EXPECTED_TYPE = {
     'Wildcards': 'Archive',
-    'Poses': 'Archive'
+    'Poses': 'Archive',
+    'Assets': 'Archive'
 }
 
 def model_data(model_id, version):
@@ -27,11 +28,10 @@ def download_model(download_url, file_path, type_):
 
     response = requests.get(download_url, stream=True, timeout=30)
     response.raise_for_status()
-    model_path = f'{os.getcwd()}/{file_path}'
 
-    print('Destination:', model_path)
-    if not os.path.exists(model_path):
-        with open(model_path, 'wb') as fd:
+    print('Destination:', file_path)
+    if not os.path.exists(file_path):
+        with open(file_path, 'wb') as fd:
             for chunk in response.iter_content(chunk_size=8192):
                 fd.write(chunk)
         print(f'{type_.capitalize()} downloaded')
@@ -43,11 +43,10 @@ def download_base_model(download_url, file_path):
 
     response = requests.get(download_url, stream=True, timeout=30)
     response.raise_for_status()
-    model_path = f'{os.getcwd()}/{file_path}'
 
-    print('Destination:', model_path)
-    if not os.path.exists(model_path):
-        with open(model_path, 'wb') as fd:
+    print('Destination:', file_path)
+    if not os.path.exists(file_path):
+        with open(file_path, 'wb') as fd:
             for chunk in response.iter_content(chunk_size=8192):
                 fd.write(chunk)
         print(f'Base model downloaded')

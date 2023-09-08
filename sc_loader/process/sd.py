@@ -4,6 +4,7 @@
 '''
 
 import copy
+import os
 
 import gradio as gr
 
@@ -75,3 +76,17 @@ def selectable_script(script_name, script_runner):
     script_idx = [script.title().lower() for script in script_runner.selectable_scripts].index(script_name.lower())
     script = script_runner.selectable_scripts[script_idx]
     return script, script_idx
+
+sd_folder_path = os.getcwd()
+
+def lora_dir():
+    return shared.cmd_opts.lora_dir or os.path.join(sd_folder_path, 'models', 'Lora')
+
+def lyco_dir():
+    return shared.cmd_opts.lyco_dir_backcompat or os.path.join(sd_folder_path, 'models', 'LyCORIS')
+
+def embeddings_dir():
+    return shared.cmd_opts.embeddings_dir or os.path.join(sd_folder_path, 'embeddings')
+
+def basemodels_dir():
+    return shared.cmd_opts.ckpt_dir or os.path.join(sd_folder_path, 'models', 'Stable-diffusion')

@@ -1,5 +1,9 @@
 # Changelog
 
+## [5.0.2] - 2023/09/08
+### Added
+ - Handle user defined path to models
+
 ## [5.0.1] - 2023/09/08
 ### Fixed
  - Fix db loading error on first installation
