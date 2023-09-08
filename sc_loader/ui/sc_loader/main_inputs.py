@@ -37,7 +37,7 @@ def get_sub_expanders(path, expanders):
 def get_models():
     return [
         '--- Lists ---',
-        *sorted(list(c.database['series']['models'].keys())),
+        *sorted(list(c.database['series'].get('models', {}).keys())),
         '--- Models ---',
         *sorted([model.split('.')[0] for model in sd_models.checkpoint_tiles()])
     ]
@@ -47,7 +47,7 @@ def get_scenarios():
         '--- Pages ---',
         *sorted(list(c.database.get('pages', {}).keys())),
         '--- Lists ---',
-        *sorted(list(c.database['series']['scenarios'].keys())),
+        *sorted(list(c.database['series'].get('scenarios', {}).keys())),
         '--- Scenarios ---',
         *sorted(list(c.database['scenarios'].keys()))
     ]
@@ -58,7 +58,7 @@ class MainInputs(UiPart):
             data = c.database['pages'][scenario]
         except KeyError:
             try:
-                data = c.database['scenarios'][c.database['series']['scenarios'][scenario][0]]
+                data = c.database['scenarios'][c.database['series'].get('scenarios', {})[scenario][0]]
             except KeyError:
                 data = c.database['scenarios'][scenario]
 
