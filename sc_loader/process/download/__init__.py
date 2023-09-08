@@ -98,29 +98,6 @@ def generic_handler(civitai_url): # pylint: disable=too-many-locals
     _, model_type, _, _, _ = build_data('', data, model, model_file, pids, '', '', 0)
     return MODEL_TYPE_TO_HANLDER[model_type](civitai_url)
 
-def batch_line_handler(batch_line, batch_pos_line=None, batch_neg_line=None):
-    elements = batch_line.split(' ')
-    if len(elements) == 1:
-        return generic_handler(elements[0])
-    prompt_type, sc_file = elements[1].split('/')
-
-    weight = 0.75
-    name = '_'
-    if len(elements) > 2:
-        try:
-            weight = float(elements[2])
-        except:
-            name = elements[2]
-    if len(elements) > 3:
-        try:
-            weight = float(elements[3])
-        except:
-            if name != '_':
-                raise Exception(f'Invalid batch line {batch_line}')
-            name = elements[3]
-
-    return handle_model(sc_file, name, elements[0], batch_pos_line or '', batch_neg_line or '', weight, prompt_type)
-
 def handle_batch(batch_name):
     with open(get_batches_path(batch_name), 'r', encoding='utf-8') as f:
         lines = f.readlines()
@@ -143,7 +120,6 @@ def handle_batch(batch_name):
     for batch_element in batch_elements:
         try:
             msg = batch_line_handler(*batch_element)
-            print(msg)
             if msg.startswith('ERROR'):
                 msg = msg.replace('<br>', '\n').strip().split('\n')[-1]
                 batches_results += f'Failed ({msg})\n'
@@ -152,3 +128,27 @@ def handle_batch(batch_name):
         except Exception as e:
             batches_results += f'Failed ({e})\n'
     return batches_results.replace('\n', '<br>')
+
+def batch_line_handler(batch_line, batch_pos_line=None, batch_neg_line=None):
+    while '  ' in batch_line: batch_line = batch_line.replace('  ', ' ')
+    elements = batch_line.split(' ')
+    if len(elements) == 1:
+        return generic_handler(elements[0])
+    prompt_type, sc_file = elements[1].split('/')
+
+    weight = 0.75
+    name = '_'
+    if len(elements) > 2:
+        try:
+            weight = float(elements[2])
+        except:
+            name = elements[2]
+    if len(elements) > 3:
+        try:
+            weight = float(elements[3])
+        except:
+            if name != '_':
+                raise Exception(f'Invalid batch line {batch_line}')
+            name = elements[3]
+
+    return handle_model(sc_file, name, elements[0], batch_pos_line or '', batch_neg_line or '', weight, prompt_type)

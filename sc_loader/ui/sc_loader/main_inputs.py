@@ -107,7 +107,7 @@ class MainInputs(UiPart):
         ], [
             lambda: {'choices': get_models()},
             lambda: {'choices': get_scenarios()},
-            lambda: {'choices': get_prompts()}
+            lambda: {'choices': get_expanders()}
         ]
 
     @property
