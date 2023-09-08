@@ -6,8 +6,8 @@ from .additionnal_inputs import AdditionnalInputs
 from .validation import Validation
 
 class PromptCreatorTab:
-    tab_name = 'prompt_creator'
-    tab_title = 'Prompt creation'
+    tab_name = 'expander_creator'
+    tab_title = 'Expander creation'
 
     def __init__(self):
         self.components = {}

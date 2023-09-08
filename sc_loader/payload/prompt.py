@@ -58,6 +58,7 @@ def get_expander_value(expander):
         expander_value = c.database['prompts'][expander_path[0]]
         for expander_path_part in expander_path[1:]:
             expander_value = process_path(expander_value, expander_path_part)
+        expander_value = expander_value if isinstance(expander_value, str) else random.choice(expander_value)
     return expander_value
 
 def process_path(expander_value, expander_next_name):

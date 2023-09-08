@@ -15,8 +15,24 @@ def col():
         with gr.Row():
             yield None
 
-def get_prompts():
-    return sorted([f'${prompt}' for prompt in c.database['prompts'].keys()])
+def get_expanders():
+    expanders = []
+    for expander_name, expander in c.database['prompts'].items():
+        if isinstance(expander, dict):
+            expanders += get_sub_expanders(expander_name, expander)
+        else:
+            expanders.append(expander_name)
+    return sorted([f'${expander}' for expander in expanders])
+
+def get_sub_expanders(path, expanders):
+    sub_expanders = []
+    for expander_name, expander in expanders.items():
+        npath = f'{path}.{expander_name}'
+        if isinstance(expander, dict):
+            sub_expanders += get_sub_expanders(npath, expander)
+        else:
+            sub_expanders.append(npath)
+    return sub_expanders
 
 def get_models():
     return [
@@ -75,7 +91,7 @@ class MainInputs(UiPart):
         with col():
             self.expander_finder = gr.Dropdown(
                 label='Expander finder',
-                choices=get_prompts(),
+                choices=get_expanders(),
                 type='value'
             )
 
