@@ -1,4 +1,4 @@
-# Scenario creation
+# Character creation
 
 This page describes of to define a character.
 

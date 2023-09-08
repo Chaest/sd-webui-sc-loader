@@ -10,6 +10,7 @@ Before anything:
 ## Table of Contents
 
   * [Introduction](#introduction)
+  * [First steps](#first-steps)
   * [Vocabulary](#vocabulary)
     * [Config](#config)
     * [Database](#database)
@@ -17,6 +18,11 @@ Before anything:
     * [Sc Loader](#sc-loader)
     * [Expander creation](#expander-creation)
     * [Sc Tools](#sc-tools)
+      * [Batch download](#batch-download)
+      * [Download](#downloads)
+      * [Open to SC pose](#openpose-to-sc-pose)
+      * [Create file](#create-file)
+      * [Create DB](#create-db)
     * [Sc DB Edit](#sc-db-edit)
   * [Using the database](#using-the-database)
     * [Character types](#character-types)
@@ -38,6 +44,10 @@ Say you want to create a situation in which two characters are kissing. By build
 A scenario will handle the prompts as well as the scripts. It automates things such as controlnet openposes, latent couple, etc.
 
 It also includes features such as a wildcard system and civitai scrapping.
+
+## First steps
+
+Please head to the Sc Tools and select the last option. Copy the path of where you'd like the Sc Loader DB to be at and click on the Gooo! button.
 
 ## Vocabulary
 
@@ -113,6 +123,8 @@ Lycoris are added to the `LyCORIS` folder.
 
 You can adjust the weight of the model using the model weight.
 
+You can leave put a `_` inside the name field to let Sc Loader try to create the name using the civitai data.
+
 You can add **additional prompts** using the corresponding fields.
 
 <ins>For more complex models:</ins>
@@ -137,6 +149,48 @@ Let's say I want the version "V1". Then my url would look like: `https://civitai
 You can use both: `https://civitai.com/models/123456/my-model[0,1,3]@1`
 
 Please remember it starts at 0.
+
+### Sc Tools
+
+A tab with a few tools to use.
+
+#### Batch download
+
+Batch download, allow the download of a batch, which is basically a list of element to download from civitai.
+
+Just refer to the name of `.txt` file in the db batches folder. Each line can be:
+ * `<civitai_url>[opts] <folder>/<file>.yaml [name] [weight]`: equivalent to the prompt creation tab in a line, name and weight can be swapped and are optional. It can be followed by 0 to 3 lines of prompts starting with `> ` to add positive/negative prompts:
+```
+https:.... characters/misc.yaml name 0.75
+https:.... characters/misc.yaml 0.8
+> a positive prompt
+https:.... characters/misc.yaml name2
+> a positive prompt
+> a negative prompt
+```
+ * `<civitai_url>`: an URL for either a base model, an openpose package or a wildcard package
+
+If a line starts with "*" the batch downloader will ignore it. Every time you run a batch download, it will add that before every line it was successful downloading making the rerun much faster. (Re run will most definitely happen given civitai tendency to timeout requests :p)
+
+#### Downloads
+
+Three options to download a base model, a wildcard package or an openpose package.
+
+#### Openpose to Sc Pose
+
+Give a path to an openpose json file inside the pose folder to create an sc pose equivalent.
+
+#### Create file
+
+Give a path inside the db, the file and folders will be created.
+
+#### Create DB
+
+Give a path anywhere in the computer and a DB will be created there and SC Loader settings will point to that location.
+
+### Sc DB Edit
+
+A very basic file editor for the database for people really reluctant to use an editor. Select a file and load it with the reload button. Save with the save button. For JSON and YAML files it will ensure they are correctly formatted.
 
 ## Using the database
 
