@@ -30,6 +30,7 @@ Before anything:
     * [Characters](#characters)
     * [Expanders](#expanders)
     * [Scenarios](#scenarios)
+    * [Pages](#pages)
     * [Series](#series)
  * [To go further](#to-go-further)
     * [Understanding the database](#understanding-the-database)
@@ -279,6 +280,9 @@ You can learn how to use one [here](#sc-loader).
 ### Pages
 
 Pages are special kind of scenarios made of normal scenario that will create comics like pages.
+
+Pages look like that:
+![Alt text](imgs/page.png)
 
 You can learn how to create one [here](docs/page_creation.md).
 
