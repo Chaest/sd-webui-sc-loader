@@ -1,6 +1,10 @@
 # Changelog
 
-## [Unreleased]
+## [5.0.1] - 2023/09/08
+### Fixed
+ - Fix db loading error on first installation
+
+## [5.0.0] - 2023/09/08
 ### Added
  - A prompt blacklist
  - A DB file edit tab
