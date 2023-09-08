@@ -1,5 +1,7 @@
 import os
 
+from sc_loader.process.sd import basemodels_dir, lora_dir, lyco_dir, embeddings_dir
+
 from .utils import normalized_name
 from ... import context as c
 
@@ -12,10 +14,10 @@ TYPE_MAPPER = {
     'Poses': 'Poses'
 }
 TYPE_TO_FOLDER = {
-    'lora': 'models/Lora',
-    'lyco': 'models/LyCORIS',
-    'ckpt': 'models/Stable-diffusion',
-    'ti': 'embeddings',
+    'lora': lora_dir(),
+    'lyco': lyco_dir(),
+    'ckpt': basemodels_dir(),
+    'ti': embeddings_dir(),
     'wildcard': 'N/A',
     'Poses': 'N/A'
 }
@@ -49,7 +51,7 @@ def download_data(model, type_, file_data):
     file_hash = file_data['hashes'].get('AutoV2', model['creator'].get('username', 'undefined'))
     download_url = file_data['downloadUrl']
     file_name_wo_ext, file_name = specific_name(file_data['name'], file_hash)
-    file_path = TYPE_TO_FOLDER[type_] + '/' + file_name
+    file_path = os.path.join(TYPE_TO_FOLDER[type_], file_name)
     return file_name_wo_ext, file_path, download_url
 
 def create_model_prompt(model_type, weight, file_name):
