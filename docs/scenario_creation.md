@@ -130,6 +130,8 @@ It also tries to create masks automatically when providing a pose as a json (or 
 
 You can also migrate a JSON pose to an ScPose via the Sc Tool tab. Then you can add use the notion of layer to generate better masks.
 
+**None of these options currently handles hands or face. Coming next release."
+
 ![Alt text](../imgs/toscpose.png)
 
 ```yaml
