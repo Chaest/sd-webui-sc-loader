@@ -69,7 +69,10 @@ def add_pose(canvas, keypoints, lin_rad, circle_rad):
             cv2.circle(canvas, int_coord(kp), circle_rad, connect_color[i], -1)
 
 def get_rads_from_context(payload):
-    return [int(radius) for radius in re.findall(r'@(\d+)', payload['alwayson_scripts']['Sc Latent Couple']['args'][2].replace('_', f'@{DEFAULT_RADIUS}'))]
+    try:
+        return [int(radius) for radius in re.findall(r'@(\d+)', payload['alwayson_scripts']['Sc Latent Couple']['args'][2].replace('_', f'@{DEFAULT_RADIUS}'))]
+    except KeyError: # ControlNet without Sc Latent
+        return []
 
 def handle_default_points(people_points, w, h):
     if ADD_DEFAULT:
