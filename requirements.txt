@@ -1,1 +1,4 @@
 sonotoria
+numpy
+opencv-python
+Pillow

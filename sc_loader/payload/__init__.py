@@ -3,6 +3,7 @@ import copy
 from .. import context as c
 from .coupling import gen_couplings
 from .controlnet import update_cn_data
+from .latent_couple import update_latent_couple_data
 from .ui_inputs_data import apply_ui_inputs
 from .prompt import build_prompts
 
@@ -35,9 +36,39 @@ def create_payloads():
             yield payload
     c.current_payload = None
 
+def create_payloads_for_page():
+    skipped_models = []
+    page = c.database['pages'][c.scenario]
+    nb_scenarios = len(page['scenarios'])
+    coupling_idx = 0
+    couplings = gen_couplings(True)
+    while coupling_idx != len(couplings):
+        for _ in range(c.nb_repeats):
+            for coupling in couplings[coupling_idx:coupling_idx+nb_scenarios]:
+                if coupling[MODEL_IDX] in skipped_models:
+                    continue
+                scenario = coupling[-1]
+                char_to_idx = {v: i for i, v in enumerate(page['characters'])}
+                characters = [coupling[char_to_idx[character]+1] for character in scenario['characters']]
+                payload = create_payload(coupling[0], scenario, *characters)
+                c.current_payload = payload
+                if c.skip_model:
+                    skipped_models.append(c.skipped_model)
+                    c.skip_model = False
+                if payload['override_settings']['sd_model_checkpoint'] in skipped_models:
+                    continue
+                yield payload
+            yield None
+        coupling_idx += nb_scenarios
+    c.current_payload = None
+
 def create_payloads_for_repeats(model, scenario, *characters):
     for _ in range(c.nb_repeats):
-        payload = copy.deepcopy(DEFAULT_PAYLOAD_DATA | scenario['base_payload'])
-        update_cn_data(payload)
-        apply_ui_inputs(payload, model)
-        yield payload | build_prompts(scenario, characters)
+        yield create_payload(model, scenario, *characters)
+
+def create_payload(model, scenario, *characters):
+    payload = copy.deepcopy(DEFAULT_PAYLOAD_DATA | scenario['base_payload'])
+    update_cn_data(payload)
+    update_latent_couple_data(payload)
+    apply_ui_inputs(payload, model)
+    return payload | build_prompts(scenario, characters)

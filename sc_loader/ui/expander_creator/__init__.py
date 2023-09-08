@@ -5,11 +5,9 @@ from .name_and_url import NameAndUrl
 from .additionnal_inputs import AdditionnalInputs
 from .validation import Validation
 
-from ... import context as c
-
 class PromptCreatorTab:
-    tab_name = 'prompt_creator'
-    tab_title = 'Prompt creation'
+    tab_name = 'expander_creator'
+    tab_title = 'Expander creation'
 
     def __init__(self):
         self.components = {}

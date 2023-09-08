@@ -15,8 +15,24 @@ def col():
         with gr.Row():
             yield None
 
-def get_prompts():
-    return sorted([f'${prompt}' for prompt in c.database['prompts'].keys()])
+def get_expanders():
+    expanders = []
+    for expander_name, expander in c.database['prompts'].items():
+        if isinstance(expander, dict):
+            expanders += get_sub_expanders(expander_name, expander)
+        else:
+            expanders.append(expander_name)
+    return sorted([f'${expander}' for expander in expanders])
+
+def get_sub_expanders(path, expanders):
+    sub_expanders = []
+    for expander_name, expander in expanders.items():
+        npath = f'{path}.{expander_name}'
+        if isinstance(expander, dict):
+            sub_expanders += get_sub_expanders(npath, expander)
+        else:
+            sub_expanders.append(npath)
+    return sub_expanders
 
 def get_models():
     return [
@@ -28,6 +44,8 @@ def get_models():
 
 def get_scenarios():
     return [
+        '--- Pages ---',
+        *sorted(list(c.database.get('pages', {}).keys())),
         '--- Lists ---',
         *sorted(list(c.database['series']['scenarios'].keys())),
         '--- Scenarios ---',
@@ -37,9 +55,12 @@ def get_scenarios():
 class MainInputs(UiPart):
     def switch_sc(self, scenario):
         try:
-            data = c.database['scenarios'][c.database['series']['scenarios'][scenario][0]]
+            data = c.database['pages'][scenario]
         except KeyError:
-            data = c.database['scenarios'][scenario]
+            try:
+                data = c.database['scenarios'][c.database['series']['scenarios'][scenario][0]]
+            except KeyError:
+                data = c.database['scenarios'][scenario]
 
         expected_characters = data['characters']
         c.expected_characters_idxs = [c.database['character_types'].index(character) for character in expected_characters]
@@ -70,7 +91,7 @@ class MainInputs(UiPart):
         with col():
             self.expander_finder = gr.Dropdown(
                 label='Expander finder',
-                choices=get_prompts(),
+                choices=get_expanders(),
                 type='value'
             )
 
@@ -86,7 +107,7 @@ class MainInputs(UiPart):
         ], [
             lambda: {'choices': get_models()},
             lambda: {'choices': get_scenarios()},
-            lambda: {'choices': get_prompts()}
+            lambda: {'choices': get_expanders()}
         ]
 
     @property

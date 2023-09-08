@@ -11,7 +11,11 @@ disable=logging-fstring-interpolation,
         line-too-long,
         broad-exception-raised,
         too-few-public-methods,
-        relative-beyond-top-level
+        relative-beyond-top-level,
+        multiple-statements,
+        too-many-arguments,
+        consider-using-enumerate,
+        too-many-locals
 
 [FORMAT]
 max-line-length=150

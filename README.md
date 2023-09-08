@@ -10,17 +10,27 @@ Before anything:
 ## Table of Contents
 
   * [Introduction](#introduction)
+  * [First steps](#first-steps)
   * [Vocabulary](#vocabulary)
     * [Config](#config)
     * [Database](#database)
   * [Tabs](#tabs)
     * [Sc Loader](#sc-loader)
-    * [Prompt creator](#prompt-creator)
+    * [Expander creation](#expander-creation)
+    * [Sc Tools](#sc-tools)
+      * [Batch download](#batch-download)
+      * [Download](#downloads)
+      * [Open to SC pose](#openpose-to-sc-pose)
+      * [Create file](#create-file)
+      * [Create DB](#create-db)
+    * [Sc DB Edit](#sc-db-edit)
   * [Using the database](#using-the-database)
     * [Character types](#character-types)
+    * [Prompts blacklist](#prompts-blacklist)
     * [Characters](#characters)
     * [Expanders](#expanders)
     * [Scenarios](#scenarios)
+    * [Pages](#pages)
     * [Series](#series)
  * [To go further](#to-go-further)
     * [Understanding the database](#understanding-the-database)
@@ -35,6 +45,10 @@ Say you want to create a situation in which two characters are kissing. By build
 A scenario will handle the prompts as well as the scripts. It automates things such as controlnet openposes, latent couple, etc.
 
 It also includes features such as a wildcard system and civitai scrapping.
+
+## First steps
+
+Please head to the Sc Tools and select the last option. Copy the path of where you'd like the Sc Loader DB to be at and click on the Gooo! button.
 
 ## Vocabulary
 
@@ -91,7 +105,7 @@ Tags is just a list of comma separated string the can be used inside scenario to
 
 The rest should pretty straight forward. They the classical options. If an option is accompanied by a checkbox for override, it means it's not used by default (ensuring the scenarios' options are preferred) so you have to tick them to use them.
 
-### Prompt creator
+### Expander creation
 
 The prompt creator tab should look like this:
 ![prompttab](imgs/creatortab.png)
@@ -108,9 +122,11 @@ Downloaded models have the AutoV2 hash appended to them if given, otherwise the 
 
 Lycoris are added to the `LyCORIS` folder.
 
-You can adjust the weight of the model using the model weight. (`(embedding:<weight>)` for embeddings)
+You can adjust the weight of the model using the model weight.
 
-You can add **additional prompts** using the corresponding field.
+You can leave put a `_` inside the name field to let Sc Loader try to create the name using the civitai data.
+
+You can add **additional prompts** using the corresponding fields.
 
 <ins>For more complex models:</ins>
 
@@ -135,6 +151,48 @@ You can use both: `https://civitai.com/models/123456/my-model[0,1,3]@1`
 
 Please remember it starts at 0.
 
+### Sc Tools
+
+A tab with a few tools to use.
+
+#### Batch download
+
+Batch download, allow the download of a batch, which is basically a list of element to download from civitai.
+
+Just refer to the name of `.txt` file in the db batches folder. Each line can be:
+ * `<civitai_url>[opts] <folder>/<file>.yaml [name] [weight]`: equivalent to the prompt creation tab in a line, name and weight can be swapped and are optional. It can be followed by 0 to 3 lines of prompts starting with `> ` to add positive/negative prompts:
+```
+https:.... characters/misc.yaml name 0.75
+https:.... characters/misc.yaml 0.8
+> a positive prompt
+https:.... characters/misc.yaml name2
+> a positive prompt
+> a negative prompt
+```
+ * `<civitai_url>`: an URL for either a base model, an openpose package or a wildcard package
+
+If a line starts with "*" the batch downloader will ignore it. Every time you run a batch download, it will add that before every line it was successful downloading making the rerun much faster. (Re run will most definitely happen given civitai tendency to timeout requests :p)
+
+#### Downloads
+
+Three options to download a base model, a wildcard package or an openpose package.
+
+#### Openpose to Sc Pose
+
+Give a path to an openpose json file inside the pose folder to create an sc pose equivalent.
+
+#### Create file
+
+Give a path inside the db, the file and folders will be created.
+
+#### Create DB
+
+Give a path anywhere in the computer and a DB will be created there and SC Loader settings will point to that location.
+
+### Sc DB Edit
+
+A very basic file editor for the database for people really reluctant to use an editor. Select a file and load it with the reload button. Save with the save button. For JSON and YAML files it will ensure they are correctly formatted.
+
 ## Using the database
 
 ### Character types
@@ -142,6 +200,10 @@ Please remember it starts at 0.
 Character types are the types of character that can be used in a scenario. It a simple file at the root of the database. Each line is a type of character.
 
 They are used to generate the corresponding field in the UI and a reload will be needed if more character types are added. So feel free to add as many as you think you will need.
+
+### Prompts blacklist
+
+A list of word to blacklist from triggerwords when creating an expander.
 
 ### Characters
 
@@ -176,6 +238,14 @@ long hair
 
 Results in the same key/value pair as the one defined in the previous example.
 
+Dicts are also supported to nest expanders:
+```yaml
+my:
+  expander: myprompt # used with $my.expander
+```
+
+
+
 **Expanders can be used in prompts using a `$` prefix.**
 
 Expanders can be used inside other expanders:
@@ -187,19 +257,17 @@ rnd:
  - long hair
 ```
 
-They can only be used in the context of the scenario loader though. **They will not work on the txt2img or img2img prompts.**
-
-When creating subfolders, the prompts will be added using the initials of the folder name.
+When creating subfolders, the prompts will be added using the four first letters of each underscore separated word of the folder name.
 
 Examples:
 
 ![example1](imgs/example_sub_prompt.png)
 
-Gives the expander: `$c_clothes`
+Gives the expander: `$clot_clothes`
 
 ![example1](imgs/example_sub_prompt2.png)
 
-Gives the expander: `$mc_clothes`
+Gives the expander: `$moreclot_clothes`
 
 ### Scenarios
 
@@ -209,9 +277,18 @@ You can learn how to create one [here](docs/scenario_creation.md) or [here](#pro
 
 You can learn how to use one [here](#sc-loader).
 
+### Pages
+
+Pages are special kind of scenarios made of normal scenario that will create comics like pages.
+
+Pages look like that:
+![Alt text](imgs/page.png)
+
+You can learn how to create one [here](docs/page_creation.md).
+
 ### Series
 
-Series are list defined as `.txt` files in their corresponding folder within the database `series` folder.
+Series are lists defined as `.txt` files in their corresponding folder within the database `series` folder.
 
 Series can be of four types:
  - Models: list of models to run a scenario on
@@ -282,4 +359,4 @@ Yaml and JSONs files are loaded using the [sonotoria lib](https://pypi.org/proje
 
 ### Filters
 
-Any jinja2 filters can be added inside the `filters.py` file. Inside it is referenced the context at the state of the creation of the payload. It is mostly useful to access tags. A filter will be any function added in the dictionary returned by the `get_filters` function. You don't need to reload the app to reload the filters, they are always reloaded.
+Any jinja2 filters can be added inside the `filters.py` file. Inside it is referenced the context at the state of the creation of the payload. A filter will be any function added in the dictionary returned by the `get_filters` function. You don't need to reload the app to reload the filters, they are always reloaded.
