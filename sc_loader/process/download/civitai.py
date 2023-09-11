@@ -1,6 +1,9 @@
 import os
 import zipfile
 import requests
+import traceback
+
+from .handlers import batch
 
 DEFAULT_EXPECTED_TYPE = 'Model'
 MODEL_TO_EXPECTED_TYPE = {
@@ -91,7 +94,7 @@ def download_poses(url, folder):
     os.remove(zip_path)
     print('Poses downloaded')
 
-def download_package(url, folder):
+def download_package(url, folder, redownload):
     print('Downloading package')
     response = requests.get(url, stream=True, timeout=30)
     response.raise_for_status()
@@ -105,10 +108,23 @@ def download_package(url, folder):
         os.makedirs(folder)
 
     with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-        zip_ref.extractall(folder)
+        if redownload or not os.path.exists(folder):
+            zip_ref.extractall(folder)
 
     os.remove(zip_path)
     print('Package downloaded')
+
+    results = ''
+    if os.path.exists(f'{folder}/batches'):
+        for file_ in os.listdir(f'{folder}/batches'):
+            if file_.endswith('.txt'):
+                try:
+                    results += f'<br>Results for {file_}:<br>'
+                    results += batch.process_batch(f'{folder}/batches/{file_}')
+                except:
+                    print(f'Batch {file_} failed')
+                    print(traceback.format_exc())
+    return results
 
 def find_kv(key, value, list_):
     return (list(filter(lambda e: e[key] == value, list_)) or [None])[0]

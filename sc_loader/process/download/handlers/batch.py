@@ -3,7 +3,10 @@ from .model import handle_model
 from .mono import generic_handler
 
 def handle_batch(batch_name):
-    with open(get_batches_path(batch_name), 'r', encoding='utf-8') as f:
+    return process_batch(get_batches_path(batch_name))
+
+def process_batch(batch_path):
+    with open(batch_path, 'r', encoding='utf-8') as f:
         lines = f.readlines()
 
     batch_elements = []
@@ -34,13 +37,13 @@ def handle_batch(batch_name):
         except Exception as e:
             batches_results += f'Failed ({e})\n'
 
-    update_batch_file(batch_name, batch_elements, batches_results)
+    update_batch_file(batch_path, batch_elements, batches_results)
 
     return batches_results.replace('\n', '<br>')
 
-def update_batch_file(batch_name, batch_elements, batches_results):
+def update_batch_file(batch_path, batch_elements, batches_results):
     results = batches_results.strip().split('\n')
-    with open(get_batches_path(batch_name), 'w', encoding='utf-8') as f:
+    with open(batch_path, 'w', encoding='utf-8') as f:
         for idx, result in enumerate(results):
             prefix = '* ' if result == 'Success' else ''
             f.write(prefix + batch_elements[idx][0] + '\n')
