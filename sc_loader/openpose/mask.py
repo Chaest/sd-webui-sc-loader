@@ -1,6 +1,6 @@
 import numpy as np
 
-from .default_data import connect_keypoints, DEFAULT_RADIUS
+from .default_data import body_connections, DEFAULT_RADIUS
 
 def create_people_masks(data, rads, h, w, weigth):
     return split_masks(data['people'], h, w, weigth, create_people_mask(data, rads, h, w))
@@ -43,7 +43,7 @@ def create_people_mask(data, rads, h, w):
                         mask[y_new, x_new] = person_id + 1
                         distance_mask[y_new, x_new] = dist
 
-        for i, j in connect_keypoints:
+        for i, j in body_connections:
             x1, y1, c1 = keypoints[i]
             x2, y2, c2 = keypoints[j]
             if c1 == 0 or c2 == 0:
