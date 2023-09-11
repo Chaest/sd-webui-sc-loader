@@ -10,8 +10,6 @@ from sonotoria import jaml
 from .common import COLORS, CONNECTIONS, DEFAULT_RADIUS, HAND_CONNECTIONS, HAND_POINTS_COLOR
 from .sc_mask import create_people_masks
 from .person import load_people
-from ..json_to_openpose import handle_faces, handle_hands
-from ..default_data import hand_colors, hand_connections
 from ... import context as c
 
 def from_sc_pose(sc_pose_path, payload):

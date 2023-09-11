@@ -4,16 +4,15 @@ import json
 import yaml
 import gradio as gr
 
-from modules.shared import opts
 from modules.ui_components import ToolButton
 from modules.ui_common import refresh_symbol
 
-from ...context import DB_DIR
+from ...context import DB_DIR, get_cfg_path
 from ..ui_part import UiPart
 
 def list_db_files():
     all_files = []
-    for root, _, files in os.walk(f'{opts.sc_loader_config_path}/{DB_DIR}'):
+    for root, _, files in os.walk(f'{get_cfg_path()}/{DB_DIR}'):
         for file in files:
             full_path = os.path.join(root, file)
             all_files.append(full_path)

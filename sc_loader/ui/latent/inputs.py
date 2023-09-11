@@ -3,15 +3,15 @@ import os
 import gradio as gr
 
 from modules.ui_common import create_refresh_button
-from modules.shared import opts
 
 from sc_loader.process.latent.tensor import do_visualize
 
 from ..ui_part import UiPart
+from ...context import get_cfg_path
 
 def get_pose_files():
     poses = []
-    for root, _, files in os.walk(opts.sc_loader_config_path):
+    for root, _, files in os.walk(get_cfg_path()):
         for file in files:
             if file.split('.')[-1] in ('json', 'yaml', 'yaml'):
                 poses.append(os.path.join(root, file))

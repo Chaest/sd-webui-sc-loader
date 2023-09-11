@@ -3,12 +3,10 @@ import os
 from importlib.machinery import SourceFileLoader
 from importlib.util import spec_from_loader, module_from_spec
 
-from modules.shared import opts
-
 from . import context as c # pylint: disable=no-name-in-module
 
 def load_filters():
-    module = load_filter_module(f'{opts.sc_loader_config_path}/filters.py')
+    module = load_filter_module(f'{c.get_cfg_path()}/filters.py')
     funcs = getattr(module, 'get_filters', lambda _: {})(c)
     if len(funcs) == 0:
         print('No filters loaded.')
