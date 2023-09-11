@@ -3,6 +3,7 @@
 '''
 
 import os
+from distutils.dir_util import copy_tree
 
 from modules.shared import opts
 from modules import scripts
@@ -47,14 +48,37 @@ short_prompts = {'positive': '', 'negative': ''}
 
 DB_DIR = '_db'
 
+warned = False
+
 def prefix(file_name):
     return ''.join((part[0:4] for part in file_name.split('_')))
 
+def warn(msg):
+    global warned
+    if not warned:
+        print('[SC LOADER][WARNING] >>>> ', msg)
+        print('[SC LOADER][WARNING] >>>> ', msg)
+        print('[SC LOADER][WARNING] >>>> ', msg)
+        warned = True
+
 def get_cfg_path():
+    default_path = os.path.join(scripts.current_basedir, 'sc_configs')
     try:
+        if not os.path.exists(opts.sc_loader_config_path):
+            if not os.path.exists(default_path):
+                copy_tree('extensions/sd-webui-sc-loader/base_configs', default_path)
+                warn(f'Could not load DB, created a new one default one at {default_path}, you can change it in tools or settings.')
+            else:
+                warn(f'Could not load DB, using default one at {default_path}, you can change it in tools or settings.')
+            return default_path
         return opts.sc_loader_config_path
     except:
-        return os.path.join(scripts.current_basedir, 'base_configs')
+        if not os.path.exists(default_path):
+            copy_tree('extensions/sd-webui-sc-loader/base_configs', default_path)
+            warn(f'Initiated a DB at {default_path}, you can change it in tools or settings.')
+        else:
+            warn(f'Could not load DB, using default one at {default_path}, you can change it in tools or settings.')
+        return default_path
 
 def load_db():
     global database
