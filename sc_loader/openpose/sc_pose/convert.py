@@ -26,9 +26,6 @@ def from_sc_pose(sc_pose_path, payload):
     c.poses_masks_generated, mask, max_layer = create_people_masks(data, rads, weigth=1)
     layer_value = int(255 / (max_layer + 1))
     pose_depthmask = ((mask+1) * layer_value).astype('uint8')
-    cv2.imwrite('sc_depthmap.png', pose_depthmask)
-    for i, m in enumerate(c.poses_masks_generated):
-        cv2.imwrite(f'sc_pose_{i}.png', (m * 255).astype('uint8'))
 
     _, buffer = cv2.imencode('.jpg', canvas)
     _, buffer_depth = cv2.imencode('.jpg', pose_depthmask)
