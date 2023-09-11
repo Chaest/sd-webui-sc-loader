@@ -52,7 +52,11 @@ def handle_base_model(civitai_url): # pylint: disable=too-many-locals
     return 'Successfully downloaded base model'
 
 @output_result
-def handle_package(civitai_url): # pylint: disable=too-many-locals
+def rehandle_package(civitai_url):
+    return handle_package(civitai_url, True)
+
+@output_result
+def handle_package(civitai_url, redownload=False): # pylint: disable=too-many-locals
     print(f'Adding package')
 
     model_id, pids, version = url_data('model', civitai_url)
@@ -60,8 +64,8 @@ def handle_package(civitai_url): # pylint: disable=too-many-locals
     _, model_type, _, file_path, download_url = build_data('', data, model, model_file, pids, '', '', 0)
     if model_type != 'Package':
         raise Exception('Not a package')
-    download_package(download_url, get_package_path(data))
-    return 'Successfully downloaded package'
+    results = download_package(download_url, get_package_path(data), redownload)
+    return 'Successfully downloaded package<br>' + results
 
 MODEL_TYPE_TO_HANLDER = {
     'wildcard': handle_wildcards,
