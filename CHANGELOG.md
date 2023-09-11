@@ -1,6 +1,6 @@
 # Changelog
 
-## [5.1.0] - xx
+## [5.1.0] - 2023/09/11
 ### Added
  - Handle faces and hands in both JSON and SC poses
  - Handle packages
@@ -8,6 +8,7 @@
 ### Fixed
  - Fixed expanders not working with batches on txt2img/img2img
  - Should remove the error "negative.yaml invalid" error message
+ - Fixed some db problems (please please do tell me if you have errors with the installation)
 
 ## [5.0.2] - 2023/09/08
 ### Added
