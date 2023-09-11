@@ -8,13 +8,13 @@ from modules.shared import opts
 
 from .config import load_dir_element
 
-version = '5.0.2'
+version = '5.1.0'
 
 
 database     = None
 scenario     = None
 batch        = None
-tags         = []
+style        = None
 hr           = False
 restore      = False
 upscaler     = None
@@ -64,14 +64,14 @@ def skip():
     skipped_model = current_payload['override_settings']['sd_model_checkpoint'] # pylint: disable=unsubscriptable-object
 
 def init():
-    global scenario, batch, tags, hr, restore, upscaler, chars, sampler, steps, characters,\
+    global scenario, batch, style, hr, restore, upscaler, chars, sampler, steps, characters,\
             cfg_scale, model, nb_iter, nb_batches, nb_repeats, seed, positive, negative,\
             denoising_strength, upscale_by, hard_skip_toggled, current_payload,\
             skipped_model, char_prompts
     load_db()
     scenario     = None
     batch        = None
-    tags         = []
+    style        = None
     hr           = False
     restore      = False
     upscaler     = None

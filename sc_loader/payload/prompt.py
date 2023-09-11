@@ -13,7 +13,9 @@ def expand_prompt(prompt):
     anti_stack_overflow = prompt
     return expand_prompt(prompt) if '$' in prompt else prompt
 
-def build_prompts(scenario, characters):
+def build_prompts(scenario, style, characters):
+    if isinstance(style, str):
+        style = [style, '']
     chars_prompts = []
     chars_neg_prompts = []
     for i in range(len(scenario['characters'])):
@@ -26,12 +28,18 @@ def build_prompts(scenario, characters):
         chars_prompts.append(','.join((sc_char_prompt['pre'], db_char_prompt, c.char_prompts[i], sc_char_prompt['post'])))
 
     positive_prompt = '\n'.join((
-        scenario['prompts']['quality'],
-        scenario['prompts']['general'],
+        scenario['prompts'].get('quality', ''),
+        style[0],
+        scenario['prompts'].get('general', ''),
         c.positive or ''
     ))
     positive_prompt = ' AND '.join([positive_prompt, *chars_prompts]) if len(chars_prompts) != 1 else positive_prompt + ', ' + chars_prompts[0]
-    negative_prompt = scenario['prompts']['negative'] + ',' + (c.negative or '') + ',' + ','.join(chars_neg_prompts)
+    negative_prompt = ','.join((
+        scenario['prompts'].get('negative', ''),
+        style[1],
+        c.negative or '',
+        ','.join(chars_neg_prompts)
+    ))
 
     return {
         'prompt': expand_prompt(positive_prompt),

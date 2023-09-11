@@ -28,7 +28,7 @@ def update_context(inputs):
         return inputs[COMPONENT_ARG_ORDER.index(key)]
 
     c.init()
-    c.tags = [tag.strip() for tag in get_input(TAGS).split(',')]
+    c.style = get_input(STYLE)
     c.model = get_input(MODEL)
     c.hr = get_input(USE_HIRES)
     c.restore = get_input(RESTORE_F)
