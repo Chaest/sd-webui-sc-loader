@@ -62,13 +62,13 @@ def create_payloads_for_page():
         coupling_idx += nb_scenarios
     c.current_payload = None
 
-def create_payloads_for_repeats(model, scenario, *characters):
+def create_payloads_for_repeats(model, scenario, style, *characters):
     for _ in range(c.nb_repeats):
-        yield create_payload(model, scenario, *characters)
+        yield create_payload(model, scenario, style, *characters)
 
-def create_payload(model, scenario, *characters):
+def create_payload(model, scenario, style, *characters):
     payload = copy.deepcopy(DEFAULT_PAYLOAD_DATA | scenario['base_payload'])
     update_cn_data(payload)
     update_latent_couple_data(payload)
     apply_ui_inputs(payload, model)
-    return payload | build_prompts(scenario, characters)
+    return payload | build_prompts(scenario, style, characters)

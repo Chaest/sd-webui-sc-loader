@@ -4,7 +4,7 @@ import gradio as gr
 
 from modules import sd_models
 
-from ...process import MODEL, SCENARIO, POSITIVE, NEGATIVE, TAGS
+from ...process import MODEL, SCENARIO, POSITIVE, NEGATIVE, STYLE
 from ... import context as c
 
 from ..ui_part import UiPart
@@ -52,6 +52,14 @@ def get_scenarios():
         *sorted(list(c.database['scenarios'].keys()))
     ]
 
+def get_styles():
+    return [
+        '--- Lists ---',
+        *sorted(list(c.database['series'].get('styles', {}).keys())),
+        '--- Styles ---',
+        *sorted(list(c.database['prompts'].get('styles', {}).keys()))
+    ]
+
 class MainInputs(UiPart):
     def switch_sc(self, scenario):
         try:
@@ -87,7 +95,11 @@ class MainInputs(UiPart):
         with col():
             self.negative = gr.Textbox(label='Negative')
         with col():
-            self.tags = gr.Textbox(label='Tags')
+            self.style = gr.Dropdown(
+                label='Style',
+                choices=get_styles(),
+                type='value'
+            )
         with col():
             self.expander_finder = gr.Dropdown(
                 label='Expander finder',
@@ -103,11 +115,13 @@ class MainInputs(UiPart):
         return [
             self.model,
             self.scenario,
-            self.expander_finder
+            self.expander_finder,
+            self.style
         ], [
             lambda: {'choices': get_models()},
             lambda: {'choices': get_scenarios()},
-            lambda: {'choices': get_expanders()}
+            lambda: {'choices': get_expanders()},
+            lambda: {'choices': get_styles()}
         ]
 
     @property
@@ -117,5 +131,5 @@ class MainInputs(UiPart):
             SCENARIO: self.scenario,
             POSITIVE: self.positive,
             NEGATIVE: self.negative,
-            TAGS: self.tags
+            STYLE: self.style
         }
