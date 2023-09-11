@@ -5,6 +5,7 @@
 import os
 
 from modules.shared import opts
+from modules import scripts
 
 from .config import load_dir_element
 
@@ -49,10 +50,16 @@ DB_DIR = '_db'
 def prefix(file_name):
     return ''.join((part[0:4] for part in file_name.split('_')))
 
+def get_cfg_path():
+    try:
+        return opts.sc_loader_config_path
+    except:
+        return os.path.join(scripts.current_basedir, 'base_configs')
+
 def load_db():
     global database
-    database = load_dir_element(f'{opts.sc_loader_config_path}/{DB_DIR}')
-    path_to_types = f'{opts.sc_loader_config_path}/{DB_DIR}/prompts'
+    database = load_dir_element(f'{get_cfg_path()}/{DB_DIR}')
+    path_to_types = f'{get_cfg_path()}/{DB_DIR}/prompts'
     for file_name in os.listdir(path_to_types):
         if os.path.isdir(path_to_types + '/' + file_name) and file_name[0] != '_':
             for key, value in database['prompts'][file_name].items():

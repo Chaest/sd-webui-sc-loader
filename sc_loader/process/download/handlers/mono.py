@@ -17,7 +17,7 @@ def output_result(f):
 
 @output_result
 def handle_wildcards(civitai_url): # pylint: disable=too-many-locals
-    print(f'Adding wild cards')
+    print('Adding wild cards')
 
     model_id, pids, version = url_data('wild_cards', civitai_url)
     data, model, model_file = model_data(model_id, version)
@@ -29,7 +29,7 @@ def handle_wildcards(civitai_url): # pylint: disable=too-many-locals
 
 @output_result
 def handle_poses(civitai_url): # pylint: disable=too-many-locals
-    print(f'Adding poses')
+    print('Adding poses')
 
     model_id, pids, version = url_data('poses', civitai_url)
     data, model, model_file = model_data(model_id, version)
@@ -41,7 +41,7 @@ def handle_poses(civitai_url): # pylint: disable=too-many-locals
 
 @output_result
 def handle_base_model(civitai_url): # pylint: disable=too-many-locals
-    print(f'Adding model')
+    print('Adding model')
 
     model_id, pids, version = url_data('model', civitai_url)
     data, model, model_file = model_data(model_id, version)
@@ -57,7 +57,7 @@ def rehandle_package(civitai_url):
 
 @output_result
 def handle_package(civitai_url, redownload=False): # pylint: disable=too-many-locals
-    print(f'Adding package')
+    print('Adding package')
 
     model_id, pids, version = url_data('model', civitai_url)
     data, model, model_file = model_data(model_id, version)

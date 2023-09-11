@@ -3,11 +3,10 @@ import os
 import gradio as gr
 
 from modules.ui_common import create_refresh_button
-from modules.shared import opts
 
 from ..ui_part import UiPart
 from ... import context as c
-from ...context import DB_DIR
+from ...context import DB_DIR, get_cfg_path
 
 class TypeAndFile(UiPart):
     def __init__(self, parent):
@@ -15,7 +14,7 @@ class TypeAndFile(UiPart):
         self.prompt_type = 'characters'
 
     def get_prompt_files(self):
-        path_to_files = f'{opts.sc_loader_config_path}/{DB_DIR}/prompts/{self.prompt_type}'
+        path_to_files = f'{get_cfg_path()}/{DB_DIR}/prompts/{self.prompt_type}'
         return [
             file_name
             for file_name in os.listdir(path_to_files)
@@ -23,7 +22,7 @@ class TypeAndFile(UiPart):
         ]
 
     def get_types(self):
-        path_to_types = f'{opts.sc_loader_config_path}/{DB_DIR}/prompts'
+        path_to_types = f'{get_cfg_path()}/{DB_DIR}/prompts'
         return [
             file_name
             for file_name in os.listdir(path_to_types)

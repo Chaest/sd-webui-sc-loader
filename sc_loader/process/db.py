@@ -3,7 +3,7 @@ from distutils.dir_util import copy_tree
 
 from modules.shared import opts
 
-from ..context import DB_DIR
+from ..context import DB_DIR, get_cfg_path
 
 def copy_db(new_path):
     new_path += '/sc_config'
@@ -15,7 +15,7 @@ def copy_db(new_path):
         return 'Could not create DB, ensure you\'ve got rights and path exists'
 
 def add_file_to_db(new_path):
-    new_path = f'{opts.sc_loader_config_path}/{DB_DIR}/prompts/{new_path}'
+    new_path = f'{get_cfg_path()}/{DB_DIR}/prompts/{new_path}'
 
     if os.path.exists(new_path):
         return f'File already exists at {new_path}'

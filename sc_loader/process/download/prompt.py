@@ -45,9 +45,8 @@ def create_prompt(url, name, user_prompt, negative_prompt, version, pids, model_
     prompts = clean_prompt(prompts)
     if not negative_prompt:
         return f'\n# Download URL: {url}\n{name}: >-\n  {prompts}\n'
-    else:
-        negative_prompt = clean_prompt(negative_prompt)
-        return f'\n# Download URL: {url}\n{name}:\n  - >-\n    {prompts}\n  - {negative_prompt}\n'
+    negative_prompt = clean_prompt(negative_prompt)
+    return f'\n# Download URL: {url}\n{name}:\n  - >-\n    {prompts}\n  - {negative_prompt}\n'
 
 def download_data(model, type_, file_data):
     file_hash = file_data['hashes'].get('AutoV2', model['creator'].get('username', 'undefined'))

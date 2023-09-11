@@ -5,8 +5,6 @@ from PIL import Image
 
 import cv2
 
-from modules.shared import opts
-
 from .. import context as c
 from ..openpose.json_to_openpose import from_json
 from ..openpose.sc_pose.convert import from_sc_pose
@@ -25,9 +23,9 @@ def get_pose(unit):
 
 def pose_to_img(pose, payload, nunits):
     if pose.endswith('.json'):
-        return from_json(f'{opts.sc_loader_config_path}/poses/{pose}', payload)
+        return from_json(f'{c.get_cfg_path()}/poses/{pose}', payload)
     if pose.endswith('.yaml') or pose.endswith('.yml'):
-        pose, depth = from_sc_pose(f'{opts.sc_loader_config_path}/poses/{pose}', payload)
+        pose, depth = from_sc_pose(f'{c.get_cfg_path()}/poses/{pose}', payload)
         #nunits.append({
         #    'model': OPENPOSE_MODEL_DEPTH,
         #    'input_image': depth
@@ -35,7 +33,7 @@ def pose_to_img(pose, payload, nunits):
         return pose
     if '.' not in pose:
         pose += '.png'
-    return load_img_str(f'{opts.sc_loader_config_path}/poses/{pose}')
+    return load_img_str(f'{c.get_cfg_path()}/poses/{pose}')
 
 def update_cn_data(payload):
     if 'alwayson_scripts' not in payload or 'controlnet' not in payload['alwayson_scripts']:
