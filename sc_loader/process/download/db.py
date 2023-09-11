@@ -1,3 +1,5 @@
+import os
+
 from modules.shared import opts
 
 from ...context import DB_DIR
@@ -18,3 +20,9 @@ def get_poses_path(civitai_data):
 
 def get_batches_path(batch_name):
     return f'{opts.sc_loader_config_path}/{DB_DIR}/batches/{batch_name}.txt'
+
+def get_package_path(civitai_data):
+    packages_db_path = f'{opts.sc_loader_config_path}/{DB_DIR}/_packages'
+    if not os.path.exists(packages_db_path):
+        os.makedirs(packages_db_path)
+    return f'{packages_db_path}/_{normalized_name(civitai_data["name"])}'

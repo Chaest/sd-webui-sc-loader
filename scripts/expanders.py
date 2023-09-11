@@ -14,8 +14,8 @@ class ExpanderScript(scripts.Script):
         original_prompt = p.all_prompts[0]
         original_neg_prompt = p.all_negative_prompts[0]
 
-        p.all_prompts[0] = expand_prompt(p.all_prompts[0])
-        p.all_negative_prompts[0] = expand_prompt(p.all_negative_prompts[0])
+        p.all_prompts = [expand_prompt(prompt) for prompt in p.all_prompts]
+        p.all_negative_prompts = [expand_prompt(prompt) for prompt in p.all_negative_prompts]
 
         if original_prompt != p.all_prompts[0]:
             p.extra_generation_params['Original prompt'] = original_prompt
