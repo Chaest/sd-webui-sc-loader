@@ -11,7 +11,8 @@ TYPE_MAPPER = {
     'TextualInversion': 'ti',
     'Checkpoint': 'ckpt',
     'Wildcards': 'wildcard',
-    'Poses': 'Poses'
+    'Poses': 'Poses',
+    'Other': 'Package'
 }
 TYPE_TO_FOLDER = {
     'lora': lora_dir(),
@@ -19,7 +20,8 @@ TYPE_TO_FOLDER = {
     'ckpt': basemodels_dir(),
     'ti': embeddings_dir(),
     'wildcard': 'N/A',
-    'Poses': 'N/A'
+    'Poses': 'N/A',
+    'Package': 'N/A'
 }
 
 def build_data(name, model, version, file_data, pids, user_prompt, negative_prompt, weight): # pylint: disable=too-many-arguments

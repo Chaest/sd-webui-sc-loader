@@ -6,7 +6,7 @@ DEFAULT_EXPECTED_TYPE = 'Model'
 MODEL_TO_EXPECTED_TYPE = {
     'Wildcards': 'Archive',
     'Poses': 'Archive',
-    'Assets': 'Archive'
+    'Other': 'Archive'
 }
 
 def model_data(model_id, version):
@@ -90,6 +90,25 @@ def download_poses(url, folder):
 
     os.remove(zip_path)
     print('Poses downloaded')
+
+def download_package(url, folder):
+    print('Downloading package')
+    response = requests.get(url, stream=True, timeout=30)
+    response.raise_for_status()
+
+    zip_path = os.path.join(os.getcwd(), 'temp.zip')
+    with open(zip_path, 'wb') as file:
+        for chunk in response.iter_content(chunk_size=8192):
+            file.write(chunk)
+
+    if not os.path.exists(folder):
+        os.makedirs(folder)
+
+    with zipfile.ZipFile(zip_path, 'r') as zip_ref:
+        zip_ref.extractall(folder)
+
+    os.remove(zip_path)
+    print('Package downloaded')
 
 def find_kv(key, value, list_):
     return (list(filter(lambda e: e[key] == value, list_)) or [None])[0]
