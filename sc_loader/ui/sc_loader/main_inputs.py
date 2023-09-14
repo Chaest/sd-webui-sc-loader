@@ -54,6 +54,7 @@ def get_scenarios():
 
 def get_styles():
     return [
+        '',
         '--- Lists ---',
         *sorted(list(c.database['series'].get('styles', {}).keys())),
         '--- Styles ---',

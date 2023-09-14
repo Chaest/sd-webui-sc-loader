@@ -49,8 +49,8 @@ def create_payloads_for_page():
                     continue
                 scenario = coupling[-1]
                 char_to_idx = {v: i for i, v in enumerate(page['characters'])}
-                characters = [coupling[char_to_idx[character]+1] for character in scenario['characters']]
-                payload = create_payload(coupling[0], scenario, *characters)
+                characters = [coupling[char_to_idx[character]+2] for character in scenario['characters']]
+                payload = create_payload(coupling[0], scenario, coupling[1], *characters)
                 c.current_payload = payload
                 if c.skip_model:
                     skipped_models.append(c.skipped_model)
