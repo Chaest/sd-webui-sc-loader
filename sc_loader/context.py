@@ -10,7 +10,7 @@ from modules import scripts
 
 from .config import load_dir_element
 
-version = '5.1.0'
+version = '5.2.0'
 
 
 database     = None

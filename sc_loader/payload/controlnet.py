@@ -21,15 +21,11 @@ def get_pose(unit):
         return random.choice(c.database['series']['poses'][img])
     return img
 
-def pose_to_img(pose, payload, nunits):
+def pose_to_img(pose, payload):
     if pose.endswith('.json'):
         return from_json(f'{c.get_cfg_path()}/poses/{pose}', payload)
     if pose.endswith('.yaml') or pose.endswith('.yml'):
-        pose, depth = from_sc_pose(f'{c.get_cfg_path()}/poses/{pose}', payload)
-        #nunits.append({
-        #    'model': OPENPOSE_MODEL_DEPTH,
-        #    'input_image': depth
-        #})
+        pose, _ = from_sc_pose(f'{c.get_cfg_path()}/poses/{pose}', payload)
         return pose
     if '.' not in pose:
         pose += '.png'
@@ -40,16 +36,11 @@ def update_cn_data(payload):
         return
     cn_data = payload['alwayson_scripts']['controlnet']
     cn_units = cn_data['args']
-    width, height = Image.open(io.BytesIO(base64.b64decode(pose_to_img(get_pose(cn_units[0]), payload, [])))).size
+    width, height = Image.open(io.BytesIO(base64.b64decode(pose_to_img(get_pose(cn_units[0]), payload)))).size
     payload['height'] = height
     payload['width'] = width
-    nunits = []
-    cn_data['args'] = [
-        {
-            'model': OPENPOSE_MODEL,
-            **unit,
-            'input_image': pose_to_img(get_pose(unit), payload, nunits)
-        }
-        for unit in cn_units
-    ]
-    cn_data['args'] += nunits
+    for unit in cn_data['args']:
+        if 'model' not in unit:
+            unit['model'] = OPENPOSE_MODEL
+        if 'input_image' in unit:
+            unit['input_image'] = pose_to_img(get_pose(unit), payload)

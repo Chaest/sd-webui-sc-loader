@@ -1,5 +1,13 @@
 # Changelog
 
+## [5.1.1] - 2023/09/14
+### Added
+ - An empty style field
+
+### Fixed
+ - Fixed page not working anymore
+ - Fixed no style error
+
 ## [5.1.0] - 2023/09/11
 ### Added
  - Handle faces and hands in both JSON and SC poses

@@ -62,7 +62,7 @@ def gen_scenario_series():
     scenario_names = c.database['series'].get('scenarios', {}).get(c.scenario, [c.scenario])
     scenarios = [c.database['scenarios'][scenario_name] for scenario_name in scenario_names]
     style_names = c.database['series'].get('styles', {}).get(c.style, [c.style])
-    styles = [c.database['prompts'].get('styles', {})[style_name] for style_name in style_names]
+    styles = [c.database['prompts'].get('styles', {}).get(style_name, '') for style_name in style_names]
     characters_lists = [
         c.database['series'].get('characters', {}).get(c.chars[character_idx], [c.chars[character_idx]])
         for character_idx in range(len(scenarios[0]['characters']))
@@ -73,7 +73,7 @@ def gen_page_series():
     page = c.database['pages'][c.scenario]
     models = c.database['series'].get('models', {}).get(c.model, [c.model])
     style_names = c.database['series'].get('styles', {}).get(c.style, [c.style])
-    styles = [c.database['prompts'].get('styles', {})[style_name] for style_name in style_names]
+    styles = [c.database['prompts'].get('styles', {}).get(style_name, '') for style_name in style_names]
     characters_lists = [
         c.database['series'].get('characters', {}).get(c.chars[character_idx], [c.chars[character_idx]])
         for character_idx in range(len(page['characters']))
