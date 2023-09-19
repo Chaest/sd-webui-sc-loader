@@ -16,7 +16,7 @@ version = '5.2.0'
 database     = None
 scenario     = None
 batch        = None
-style        = None
+styles       = None
 hr           = False
 restore      = False
 upscaler     = None
@@ -88,14 +88,14 @@ def skip():
     skipped_model = current_payload['override_settings']['sd_model_checkpoint'] # pylint: disable=unsubscriptable-object
 
 def init():
-    global scenario, batch, style, hr, restore, upscaler, chars, sampler, steps, characters,\
+    global scenario, batch, styles, hr, restore, upscaler, chars, sampler, steps, characters,\
             cfg_scale, model, nb_iter, nb_batches, nb_repeats, seed, positive, negative,\
             denoising_strength, upscale_by, hard_skip_toggled, current_payload,\
             skipped_model, char_prompts
     load_db()
     scenario     = None
     batch        = None
-    style        = None
+    styles       = None
     hr           = False
     restore      = False
     upscaler     = None

@@ -2,7 +2,7 @@ MODEL = 'model'
 SCENARIO = 'scenario'
 POSITIVE = 'positive'
 NEGATIVE = 'negative'
-STYLE = 'style'
+STYLES = 'styles'
 NB_REPEATS = 'nb_repeats'
 NB_BATCHES = 'nb_batches'
 NB_ITER = 'nb_iter'
@@ -26,7 +26,7 @@ CHARACTERS = 'DO NOT USE'
 COMPONENT_ARG_ORDER = (
     MODEL, SCENARIO,
     POSITIVE, NEGATIVE,
-    STYLE,
+    STYLES,
     NB_REPEATS, NB_BATCHES, NB_ITER,
     RESTORE_F,
     USE_HIRES, UPSCALER, DENOISE_ST, UPSCALE_BY,

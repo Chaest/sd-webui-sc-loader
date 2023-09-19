@@ -1,5 +1,12 @@
 # Changelog
 
+## [5.2.0] - 2023/09/20
+### Added
+ - Can now now more than one style
+
+### Fixed
+ - Fixed next together example scenario
+
 ## [5.1.1] - 2023/09/14
 ### Added
  - An empty style field

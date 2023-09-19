@@ -21,11 +21,11 @@ next_to_each_other:
       controlnet:
         args:
           - input_image: next_each_other.png
-      Sc Couple extension:
+      Sc Latent Couple:
         args:
           - yes
           - 1:1,1:12,1:12
-          - 0:0,0:0-5,0:5-12
+          - 0:0,0:0-7,0:7-12
           - 0.2,0.8,0.8
           - 150
       Composable Lora:

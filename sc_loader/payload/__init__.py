@@ -49,8 +49,13 @@ def create_payloads_for_page():
                     continue
                 scenario = coupling[-1]
                 char_to_idx = {v: i for i, v in enumerate(page['characters'])}
-                characters = [coupling[char_to_idx[character]+2] for character in scenario['characters']]
-                payload = create_payload(coupling[0], scenario, coupling[1], *characters)
+                # coupling is models - (styles) - (characters) - scenario
+                # thus characters start a 1 + len(styles)
+                characters = [
+                    coupling[char_to_idx[character]+1+len(c.styles)]
+                    for character in scenario['characters']
+                ]
+                payload = create_payload(coupling[0], scenario, coupling[1:len(c.styles)+1], *characters)
                 c.current_payload = payload
                 if c.skip_model:
                     skipped_models.append(c.skipped_model)
@@ -62,13 +67,15 @@ def create_payloads_for_page():
         coupling_idx += nb_scenarios
     c.current_payload = None
 
-def create_payloads_for_repeats(model, scenario, style, *characters):
+def create_payloads_for_repeats(model, scenario, *styles_and_characters):
     for _ in range(c.nb_repeats):
-        yield create_payload(model, scenario, style, *characters)
+        yield create_payload(model, scenario, *styles_and_characters)
 
-def create_payload(model, scenario, style, *characters):
+def create_payload(model, scenario, *styles_and_characters):
     payload = copy.deepcopy(DEFAULT_PAYLOAD_DATA | scenario['base_payload'])
     update_cn_data(payload)
     update_latent_couple_data(payload)
     apply_ui_inputs(payload, model)
-    return payload | build_prompts(scenario, style, characters)
+    styles = styles_and_characters[:len(c.styles)]
+    characters = styles_and_characters[len(c.styles):]
+    return payload | build_prompts(scenario, styles, characters)

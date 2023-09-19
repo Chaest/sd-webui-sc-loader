@@ -61,25 +61,31 @@ def gen_scenario_series():
     models = c.database['series'].get('models', {}).get(c.model, [c.model])
     scenario_names = c.database['series'].get('scenarios', {}).get(c.scenario, [c.scenario])
     scenarios = [c.database['scenarios'][scenario_name] for scenario_name in scenario_names]
-    style_names = c.database['series'].get('styles', {}).get(c.style, [c.style])
-    styles = [c.database['prompts'].get('styles', {}).get(style_name, '') for style_name in style_names]
+    styles = c.database['prompts'].get('styles', {})
+    styles_lists = [
+        [styles.get(style_name, '') for style_name in c.database['series'].get('styles', {}).get(style, [style])]
+        for style in c.styles
+    ]
     characters_lists = [
         c.database['series'].get('characters', {}).get(c.chars[character_idx], [c.chars[character_idx]])
         for character_idx in range(len(scenarios[0]['characters']))
     ]
-    return [models, scenarios, styles, *characters_lists]
+    return [models, scenarios, *styles_lists, *characters_lists]
 
 def gen_page_series():
     page = c.database['pages'][c.scenario]
     models = c.database['series'].get('models', {}).get(c.model, [c.model])
-    style_names = c.database['series'].get('styles', {}).get(c.style, [c.style])
-    styles = [c.database['prompts'].get('styles', {}).get(style_name, '') for style_name in style_names]
+    styles = c.database['prompts'].get('styles', {})
+    styles_lists = [
+        [styles.get(style_name, '') for style_name in c.database['series'].get('styles', {}).get(style, [style])]
+        for style in c.styles
+    ]
     characters_lists = [
         c.database['series'].get('characters', {}).get(c.chars[character_idx], [c.chars[character_idx]])
         for character_idx in range(len(page['characters']))
     ]
     scenarios = [c.database['scenarios'][scenario_name] for scenario_name in page['scenarios']]
-    return [models, styles, *characters_lists, scenarios]
+    return [models, *styles_lists, *characters_lists, scenarios]
 
 def get_nb_coupling(series):
     list_ = [len(input_list) for input_list in series]

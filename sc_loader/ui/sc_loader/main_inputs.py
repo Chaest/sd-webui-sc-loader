@@ -4,7 +4,7 @@ import gradio as gr
 
 from modules import sd_models
 
-from ...process import MODEL, SCENARIO, POSITIVE, NEGATIVE, STYLE
+from ...process import MODEL, SCENARIO, POSITIVE, NEGATIVE, STYLES
 from ... import context as c
 
 from ..ui_part import UiPart
@@ -96,10 +96,11 @@ class MainInputs(UiPart):
         with col():
             self.negative = gr.Textbox(label='Negative')
         with col():
-            self.style = gr.Dropdown(
+            self.styles = gr.Dropdown(
                 label='Style',
                 choices=get_styles(),
-                type='value'
+                type='value',
+                multiselect=True
             )
         with col():
             self.expander_finder = gr.Dropdown(
@@ -117,7 +118,7 @@ class MainInputs(UiPart):
             self.model,
             self.scenario,
             self.expander_finder,
-            self.style
+            self.styles
         ], [
             lambda: {'choices': get_models()},
             lambda: {'choices': get_scenarios()},
@@ -132,5 +133,5 @@ class MainInputs(UiPart):
             SCENARIO: self.scenario,
             POSITIVE: self.positive,
             NEGATIVE: self.negative,
-            STYLE: self.style
+            STYLES: self.styles
         }

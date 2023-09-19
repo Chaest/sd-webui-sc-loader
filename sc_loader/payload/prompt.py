@@ -13,9 +13,19 @@ def expand_prompt(prompt):
     anti_stack_overflow = prompt
     return expand_prompt(prompt) if '$' in prompt else prompt
 
-def build_prompts(scenario, style, characters):
-    if isinstance(style, str):
-        style = [style, '']
+def build_prompts(scenario, styles, characters):
+    style_pos = []
+    style_neg = []
+    for style in styles:
+        if isinstance(style, str):
+            style_pos.append(style)
+        else:
+            style_pos.append(style[0])
+            style_neg.append(style[1])
+
+    style_pos = ', '.join(style_pos)
+    style_neg = ', '.join(style_neg)
+
     chars_prompts = []
     chars_neg_prompts = []
     for i in range(len(scenario['characters'])):
@@ -29,14 +39,14 @@ def build_prompts(scenario, style, characters):
 
     positive_prompt = '\n'.join((
         scenario['prompts'].get('quality', ''),
-        style[0],
+        style_pos,
         scenario['prompts'].get('general', ''),
         c.positive or ''
     ))
     positive_prompt = ' AND '.join([positive_prompt, *chars_prompts]) if len(chars_prompts) != 1 else positive_prompt + ', ' + chars_prompts[0]
     negative_prompt = ','.join((
         scenario['prompts'].get('negative', ''),
-        style[1],
+        style_neg,
         c.negative or '',
         ','.join(chars_neg_prompts)
     ))
