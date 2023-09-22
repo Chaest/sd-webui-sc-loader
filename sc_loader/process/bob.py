@@ -16,7 +16,7 @@ from ..payload import create_payloads, create_payloads_for_page
 from sc_loader.process.page import generate_pages
 
 from .sd import txt2img
-from . import * # pylint: disable=wildcard-import
+from .constants import * # pylint: disable=wildcard-import
 
 
 def update_context(inputs):
@@ -69,9 +69,12 @@ def bobing(_, *inputs):
                 c.hard_skip_toggled = False
                 break
 
-            txt2img_gallery, generation_info, html_info, html_log = txt2img(payload)
-            first_gen = first_gen or generation_info
-            gallery += txt2img_gallery
+            try:
+                txt2img_gallery, generation_info, html_info, html_log = txt2img(payload)
+                first_gen = first_gen or generation_info
+                gallery += txt2img_gallery
+            except IndexError:
+                print('Could not update gallery')
 
 
             date = datetime.today().strftime('%Y-%m-%d')
@@ -128,10 +131,13 @@ def bobing_page(clip_skip):
 
             last_batch_size = payload['batch_size'] * payload['n_iter']
 
-            txt2img_gallery, generation_info, html_info, html_log = txt2img(payload)
-            first_gen = first_gen or generation_info
-            gallery += txt2img_gallery
-            sc_imgs += txt2img_gallery[:last_batch_size]
+            try:
+                txt2img_gallery, generation_info, html_info, html_log = txt2img(payload)
+                first_gen = first_gen or generation_info
+                gallery += txt2img_gallery
+                sc_imgs += txt2img_gallery[:last_batch_size]
+            except IndexError:
+                print('Could not update gallery')
 
             date = datetime.today().strftime('%Y-%m-%d')
             samples_dir = opts.outdir_txt2img_samples + '/' + date

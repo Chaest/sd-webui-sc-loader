@@ -4,7 +4,7 @@ from modules.ui_components import FormRow
 from modules.shared import opts
 
 from ..ui_part import UiPart
-from ...process import USE_CLIP_SKIP, USE_CFG_SCALE, CLIP_SKIP, CFG_SCALE
+from ...process.constants import USE_CLIP_SKIP, USE_CFG_SCALE, CLIP_SKIP, CFG_SCALE
 
 class ClipAndConfig(UiPart):
     def build_components(self):

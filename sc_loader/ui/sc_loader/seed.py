@@ -3,7 +3,7 @@ import gradio as gr
 from modules.ui_components import FormRow
 
 from ..ui_part import UiPart
-from ...process import SEED
+from ...process.constants import SEED
 
 class Seed(UiPart):
     def build_components(self):

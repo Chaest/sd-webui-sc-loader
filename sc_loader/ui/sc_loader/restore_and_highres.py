@@ -4,7 +4,7 @@ from modules.ui_components import FormRow, FormGroup
 from modules import shared
 
 from ..ui_part import UiPart
-from ...process import RESTORE_F, USE_HIRES, UPSCALER, DENOISE_ST, UPSCALE_BY
+from ...process.constants import RESTORE_F, USE_HIRES, UPSCALER, DENOISE_ST, UPSCALE_BY
 
 class RestoreAndHires(UiPart):
     def build_components(self):

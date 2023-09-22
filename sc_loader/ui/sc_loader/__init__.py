@@ -16,6 +16,7 @@ from .restore_and_highres import RestoreAndHires
 from .sampler_section import SamplerSection
 from .seed import Seed
 from .title import Title
+from .presets import PresetMenu
 
 class ScLoaderTab:
     tab_title = 'Sc Loader'
@@ -66,6 +67,7 @@ class ScLoaderTab:
                 with gr.Row(elem_classes='generate-box'):
                     self.handle_ui_part(Buttons)
                     self.handle_ui_part(BatchSliders)
+                    self.preset_menu = self.handle_ui_part(PresetMenu)
 
         with gr.Row(equal_height=False):
             with gr.Column(variant='compact'):
@@ -91,6 +93,7 @@ class ScLoaderTab:
             )
 
             self.main_inputs.link_actions(True)
+            self.preset_menu.link_actions(True)
             self.title_part.link_actions(self.components_to_refresh, self.methods_to_refresh_them)
 
             return [(ui_component, self.tab_title, self.tab_name)]

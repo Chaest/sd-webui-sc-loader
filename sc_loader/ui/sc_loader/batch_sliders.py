@@ -1,7 +1,7 @@
 import gradio as gr
 
 from ..ui_part import UiPart
-from ...process import NB_BATCHES, NB_REPEATS, NB_ITER
+from ...process.constants import NB_BATCHES, NB_REPEATS, NB_ITER
 
 class BatchSliders(UiPart):
     def build_components(self):

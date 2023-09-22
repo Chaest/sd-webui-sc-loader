@@ -4,7 +4,7 @@ from modules.ui_components import FormRow
 from modules.sd_samplers import samplers
 
 from ..ui_part import UiPart
-from ...process import USE_SAMPLER, SAMPLER, USE_STEPS, STEPS
+from ...process.constants import USE_SAMPLER, SAMPLER, USE_STEPS, STEPS
 
 class SamplerSection(UiPart):
     def build_components(self):
