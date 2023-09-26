@@ -9,7 +9,7 @@ from modules import scripts
 
 from .config import load_dir_element
 
-version = '5.3.0'
+version = '5.3.1'
 
 
 database     = None

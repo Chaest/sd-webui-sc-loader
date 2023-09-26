@@ -1,6 +1,6 @@
 ---
 
-sample_closeup:
+sample_closeup_c1:
   characters: [character1]
 
   prompts:
@@ -11,14 +11,49 @@ sample_closeup:
 
   base_payload: {}
 
-sample_fullbody:
+sample_closeup_c2:
   characters: [character2]
 
   prompts:
     quality: $positive
-    general: ((full body))
+    general: closeup portrait, (detailed face:1.3), headshot portrait
     negative: $negative
     character2: {}
+
+  base_payload: {}
+
+sample_fullbody_c1:
+  characters: [character1]
+
+  prompts:
+    quality: $positive
+    general: ((upper body, cowboy shot))
+    negative: $negative
+    character1: {}
+
+  base_payload:
+    height: 768
+
+sample_fullbody_c2:
+  characters: [character2]
+
+  prompts:
+    quality: $positive
+    general: ((upper body, cowboy shot))
+    negative: $negative
+    character2: {}
+
+  base_payload:
+    height: 768
+
+sample_fullbody_c3:
+  characters: [character3]
+
+  prompts:
+    quality: $positive
+    general: ((upper body, cowboy shot))
+    negative: $negative
+    character3: {}
 
   base_payload:
     height: 768
@@ -31,19 +66,20 @@ sample_armsup:
 
   prompts:
     quality: $positive
-    general: ethereal color in the background, epic background
+    general: ethereal color in the background
     negative: $negative
     character1:
-      pre: raising arms
-      post: light coming from behind
+      pre: posing
+      post: smiling
     character2:
-      pre: raising arm, hand on hip
-      post: glowing aura
+      pre: hand on hip
+      post: laughing
     character3:
-      pre: raising arm, hand on hip
-      post: glowing aura
+      pre: hand on hip
+      post: speaking
 
   base_payload:
+    steps: 44
     alwayson_scripts:
       controlnet:
         args:
@@ -51,9 +87,9 @@ sample_armsup:
       Sc Latent Couple:
         args:
           - yes
-          - @0,@1,@2
-          - _,_,_
-          - 0.2,0.8,0.8
+          - '1:1,@0,@2,@1'
+          - 0:0,_,_,_
+          - 0.2,0.8,0.8,0.8
           - 150
       Composable Lora:
         args:
@@ -61,6 +97,6 @@ sample_armsup:
           - no
           - no
           - no
-          - no
-          - no
-          - no
+          - no # Remove if composable lora error
+          - no # Remove if composable lora error
+          - no # Remove if composable lora error
