@@ -1,0 +1,66 @@
+---
+
+sample_closeup:
+  characters: [character1]
+
+  prompts:
+    quality: $positive
+    general: closeup portrait, (detailed face:1.3), headshot portrait
+    negative: $negative
+    character1: {}
+
+  base_payload: {}
+
+sample_fullbody:
+  characters: [character2]
+
+  prompts:
+    quality: $positive
+    general: ((full body))
+    negative: $negative
+    character2: {}
+
+  base_payload:
+    height: 768
+
+sample_armsup:
+  characters:
+    - character1
+    - character2
+    - character3
+
+  prompts:
+    quality: $positive
+    general: ethereal color in the background, epic background
+    negative: $negative
+    character1:
+      pre: raising arms
+      post: light coming from behind
+    character2:
+      pre: raising arm, hand on hip
+      post: glowing aura
+    character3:
+      pre: raising arm, hand on hip
+      post: glowing aura
+
+  base_payload:
+    alwayson_scripts:
+      controlnet:
+        args:
+          - input_image: test_pose.json
+      Sc Latent Couple:
+        args:
+          - yes
+          - @0,@1,@2
+          - _,_,_
+          - 0.2,0.8,0.8
+          - 150
+      Composable Lora:
+        args:
+          - yes
+          - no
+          - no
+          - no
+          - no
+          - no
+          - no

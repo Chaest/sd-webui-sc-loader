@@ -1,5 +1,13 @@
 # Changelog
 
+## [5.3.0] - 2023/09/26
+### Added
+ - Added presets to save and load configurations
+ - Added a page example
+
+### Fixed
+ - Fixed page not working with styles
+
 ## [5.2.0] - 2023/09/20
 ### Added
  - Can now now more than one style

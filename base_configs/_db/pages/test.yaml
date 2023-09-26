@@ -1,0 +1,26 @@
+page_example:
+  characters:
+    - character1
+    - character2
+    - character3
+
+  panels:
+    - CC
+    - PPP
+    - L
+
+  scenarios:
+    - sample_closeup
+    - sample_closeup
+    - sample_fullbody
+    - sample_fullbody
+    - sample_fullbody
+    - sample_armsup
+
+  texts:
+    - Character1
+    - Character2
+    - Character1
+    - Character2
+    - Character3
+    - All together

@@ -3,14 +3,13 @@
 '''
 
 import os
-from distutils.dir_util import copy_tree
 
 from modules.shared import opts
 from modules import scripts
 
 from .config import load_dir_element
 
-version = '5.2.0'
+version = '5.3.0'
 
 
 database     = None

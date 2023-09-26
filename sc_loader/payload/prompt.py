@@ -35,7 +35,7 @@ def build_prompts(scenario, styles, characters):
         if isinstance(db_char_prompt, list):
             chars_neg_prompts.append(db_char_prompt[1])
             db_char_prompt = db_char_prompt[0]
-        chars_prompts.append(','.join((sc_char_prompt['pre'], db_char_prompt, c.char_prompts[i], sc_char_prompt['post'])))
+        chars_prompts.append(','.join((sc_char_prompt.get('pre', ''), db_char_prompt, c.char_prompts[i], sc_char_prompt.get('post', ''))))
 
     positive_prompt = '\n'.join((
         scenario['prompts'].get('quality', ''),
