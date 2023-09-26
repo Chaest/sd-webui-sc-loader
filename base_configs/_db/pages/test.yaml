@@ -10,11 +10,11 @@ page_example:
     - L
 
   scenarios:
-    - sample_closeup
-    - sample_closeup
-    - sample_fullbody
-    - sample_fullbody
-    - sample_fullbody
+    - sample_closeup_c1
+    - sample_closeup_c2
+    - sample_fullbody_c1
+    - sample_fullbody_c2
+    - sample_fullbody_c3
     - sample_armsup
 
   texts:

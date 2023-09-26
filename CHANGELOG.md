@@ -1,5 +1,9 @@
 # Changelog
 
+## [5.3.1] - 2023/09/26
+### Fixed
+ - Fixed page example
+
 ## [5.3.0] - 2023/09/26
 ### Added
  - Added presets to save and load configurations
