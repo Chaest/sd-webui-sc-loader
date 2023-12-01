@@ -30,7 +30,7 @@ def build_prompts(scenario, styles, characters):
     chars_neg_prompts = []
     for i in range(len(scenario['characters'])):
         character_type = scenario['characters'][i]
-        sc_char_prompt = scenario['prompts'][character_type]
+        sc_char_prompt = scenario['prompts'].get(character_type, {})
         db_char_prompt = c.database['prompts']['characters'][characters[i]]
         if isinstance(db_char_prompt, list):
             chars_neg_prompts.append(db_char_prompt[1])

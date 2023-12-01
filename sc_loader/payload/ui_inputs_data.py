@@ -17,7 +17,6 @@ def apply_ui_inputs(payload, model):
         payload['denoising_strength'] = c.denoising_strength or 0.37
         payload['hr_scale'] = c.upscale_by or 2.5
         payload['hr_upscaler'] = c.upscaler or 'R-ESRGAN 4x+'
-        payload['batch_size'] = 3
         w = payload['width']
         h = payload['height']
         if w > 512 or h > 512:
