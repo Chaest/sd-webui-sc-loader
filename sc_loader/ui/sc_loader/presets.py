@@ -17,7 +17,7 @@ def get_presets():
     if not os.path.exists(presets_path):
         return []
     return [
-        preset_filename.split('.')[0]
+        preset_filename.replace('.yaml', '').replace('.yml', '')
         for preset_filename in os.listdir(presets_path)
         if preset_filename.endswith('.yaml')
     ]
@@ -35,7 +35,7 @@ def get_component(components, name):
 def idx_to_type(char_idx):
     return c.database['character_types'][char_idx]
 
-def save_preset(name, *components):
+def save_preset(name, overwrite, *components):
     presets_path = f'{c.get_cfg_path()}/presets'
     if not os.path.exists(presets_path):
         os.makedirs(presets_path)
@@ -58,6 +58,43 @@ def save_preset(name, *components):
 
     with open(preset_path, 'w', encoding='utf-8') as preset_file:
         yaml.dump(data, preset_file)
+
+    return f'Successfully created preset at {preset_path}'
+
+def save_model_preset(overwrite, *components):
+    presets_path = f'{c.get_cfg_path()}/_db/model_presets'
+    if not os.path.exists(presets_path):
+        os.makedirs(presets_path)
+
+    full_data = {
+        COMPONENT_ARG_ORDER[component_idx]: component_value
+        for component_idx, component_value in enumerate(components[:NB_COMP_BEFORE_CHARS])
+    }
+
+    model_name = full_data['model']
+
+    preset_path = f'{presets_path}/{model_name}.yaml'
+    if os.path.exists(preset_path) and not overwrite:
+        return f'Preset already exists at {preset_path}'
+
+    data = {
+        'positive': full_data['positive'],
+        'negative': full_data['negative']
+    }
+
+    if full_data['use_cfg_scale']:
+        data['cfg_scale'] = full_data['cfg_scale']
+    if full_data['use_sampler']:
+        data['sampler'] = full_data['sampler']
+    if full_data['use_steps']:
+        data['steps'] = full_data['steps']
+    if full_data['enable_hr']:
+        data['upscaler'] = full_data['upscaler']
+        data['upscale_scale'] = full_data['upscale_scale']
+        data['strength'] = full_data['strength']
+
+    with open(preset_path, 'w', encoding='utf-8') as preset_file:
+        yaml.dump({model_name: data}, preset_file)
 
     return f'Successfully created preset at {preset_path}'
 
@@ -102,6 +139,11 @@ class PresetMenu(UiPart):
                 self.preset_name = gr.Textbox(label='Save preset')
                 self.preset_saver = ToolButton(value=save_style_symbol)
             with gr.Row():
+                self.overwrite = gr.Checkbox(False, label='Overwrite')
+            with gr.Row():
+                self.preset_output = gr.HTML('<h2>Save model preset<h2>')
+                self.model_preset_saver = ToolButton(label='Save preset', value=save_style_symbol)
+            with gr.Row():
                 self.preset_output = gr.HTML(' ')
 
     def reload_data(self):
@@ -110,7 +152,8 @@ class PresetMenu(UiPart):
     def link_actions(self, after=False):
         if after:
             components = self.parent.submit_arguments()[1:]
-            self.preset_saver.click(fn=save_preset, inputs=[self.preset_name, *components], outputs=[self.preset_output])
+            self.preset_saver.click(fn=save_preset, inputs=[self.preset_name, self.overwrite, *components], outputs=[self.preset_output])
+            self.model_preset_saver.click(fn=save_model_preset, inputs=[self.overwrite, *components], outputs=[self.preset_output])
             self.preset_loader.click(fn=load_preset, inputs=[self.preset_pick], outputs=[self.preset_output, self.preset_pick, *components])
 
     @property

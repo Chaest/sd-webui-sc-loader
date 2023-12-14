@@ -5,6 +5,7 @@ from .coupling import gen_couplings
 from .controlnet import update_cn_data
 from .latent_couple import update_latent_couple_data
 from .ui_inputs_data import apply_ui_inputs
+from .model_preset import apply_model_preset
 from .prompt import build_prompts
 
 MODEL_IDX = 0
@@ -78,4 +79,6 @@ def create_payload(model, scenario, *styles_and_characters):
     apply_ui_inputs(payload, model)
     styles = styles_and_characters[:len(c.styles)]
     characters = styles_and_characters[len(c.styles):]
-    return payload | build_prompts(scenario, styles, characters)
+    payload |= build_prompts(scenario, styles, characters)
+    apply_model_preset(payload, model)
+    return payload
