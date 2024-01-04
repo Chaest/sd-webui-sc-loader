@@ -12,7 +12,7 @@ from .buttons import Buttons
 from .char_inputs import CharInputs
 from .clip_and_config import ClipAndConfig
 from .main_inputs import MainInputs
-from .restore_and_highres import RestoreAndHires
+from .main_options import RestoreAndHires
 from .sampler_section import SamplerSection
 from .seed import Seed
 from .title import Title
@@ -34,7 +34,9 @@ class ScLoaderTab:
             gr.Label(visible=False),
             *[self.components[component_key] for component_key in COMPONENT_ARG_ORDER],
             *self.characters,
-            *self.char_prompts
+            *self.char_prompts,
+            *self.char_weights,
+            *self.char_comopts,
         ]
 
     def handle_ui_part(self, part_cls):
@@ -47,7 +49,14 @@ class ScLoaderTab:
 
     def handle_char_part(self):
         part = CharInputs(self)
-        self.characters, self.char_prompts, self.character_rows = part.build()
+        (
+            self.characters,
+            self.char_prompts,
+            self.character_rows,
+            self.character_opt_rows,
+            self.char_weights,
+            self.char_comopts,
+        ) = part.build()
         components, methods = part.reload_data()
         self.components_to_refresh += components
         self.methods_to_refresh_them += methods

@@ -14,6 +14,8 @@ OPTIONALS = ('cfg_scale', 'strength', 'steps', 'upscaler', 'sampler')
 PREPENDERS = ('positive', 'negative')
 
 def apply_model_preset(payload, model):
+    if not c.enable_models_presets: return
+
     preset = c.database.get('model_presets', {}).get(model)
     print(model, preset)
     if not preset:

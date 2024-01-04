@@ -1,10 +1,15 @@
 import re
 from dataclasses import dataclass
 
+from PIL import Image
+
 from .filters import create_filter
+from .mask import masks_from_colors
+from sc_loader import context as c
 
 DIVISIONS_RGXP = r'(?:\s*,\s*)?((?:\d+:\d+)|(?:\((?:\d+:\d+(?:\s*,\s*)?)+\))|(?:@\d+))'
 POSITIONS_RGXP = r'(?:\s*,\s*)?((?:\d+(?:-\d+)?:\d+(?:-\d+)?)|(?:\((?:\d+(?:-\d+)?:\d+(?:-\d+)?(?:\s*,\s*)?)+\))|(?:_)|(?:@\d+))'
+MASKS_IMG_RGXP = r'\[(.+)\] *(.+)'
 
 @dataclass
 class Division:
@@ -19,6 +24,7 @@ class Position:
     ex: float
 
 def params_to_filters(raw_divisions, raw_positions, raw_weights, pose_masks):
+    raw_divisions, pose_masks = update_masks(raw_divisions, pose_masks)
     division_groups = extract_division_groups(raw_divisions)
     position_groups = extract_positions_groups(raw_positions)
     weights = [float(weight) for weight in raw_weights.split(',')]
@@ -27,6 +33,13 @@ def params_to_filters(raw_divisions, raw_positions, raw_weights, pose_masks):
         create_filter(divisions, positions, weight, pose_masks)
         for divisions, positions, weight in zip(division_groups, position_groups, weights)
     ]
+
+def update_masks(raw_divisions, pose_masks):
+    m = re.match(MASKS_IMG_RGXP, raw_divisions)
+    if m:
+        return m[2], masks_from_colors(Image.open(f'{c.get_cfg_path()}/{m[1]}'))
+    else:
+        return raw_divisions, pose_masks
 
 def extract_division_groups(divisions):
     division_groups = []

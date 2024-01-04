@@ -36,9 +36,10 @@ def update_cn_data(payload):
         return
     cn_data = payload['alwayson_scripts']['controlnet']
     cn_units = cn_data['args']
-    width, height = Image.open(io.BytesIO(base64.b64decode(pose_to_img(get_pose(cn_units[0]), payload)))).size
-    payload['height'] = height
-    payload['width'] = width
+    if 'model' not in cn_units[0] or cn_units[0]['model'] in (OPENPOSE_MODEL, OPENPOSE_MODEL_DEPTH):
+        width, height = Image.open(io.BytesIO(base64.b64decode(pose_to_img(get_pose(cn_units[0]), payload)))).size
+        payload['height'] = height
+        payload['width'] = width
     for unit in cn_data['args']:
         if 'model' not in unit:
             unit['model'] = OPENPOSE_MODEL

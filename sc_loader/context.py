@@ -9,37 +9,44 @@ from modules import scripts
 
 from .config import load_dir_element
 
-version = '5.3.1'
+version = '6.0.0'
 
 
-database     = None
-scenario     = None
-batch        = None
-styles       = None
-hr           = False
-restore      = False
-upscaler     = None
-chars        = None
-char_prompts = None
-sampler      = None
-steps        = None
-characters   = None
-cfg_scale    = None
-model        = None
-nb_iter      = None
-nb_batches   = None
-nb_repeats   = None
-positive     = None
-negative     = None
-upscale_by   = None
-seed         = -1
-denoise_args = None
+database      = None
+scenario      = None
+batch         = None
+styles        = None
+hr            = False
+restore       = False
+fe            = False
+ad            = False
+upscaler      = None
+chars         = None
+char_prompts  = None
+char_weights  = None
+char_comopts  = None
+sampler       = None
+steps         = None
+characters    = None
+cfg_scale     = None
+model         = None
+nb_iter       = None
+nb_batches    = None
+nb_repeats    = None
+positive      = None
+negative      = None
+upscale_by    = None
+use_clip_skip = None
+clip_skip     = None
+seed          = -1
+denoise_args  = None
 current_payload    = None
 skipped_model      = None
 hard_skip_toggled  = None
 denoising_strength = None
 expected_characters_idxs = []
 poses_masks_generated = []
+enable_models_presets = False
 
 skip_model = False
 
@@ -90,29 +97,37 @@ def init():
     global scenario, batch, styles, hr, restore, upscaler, chars, sampler, steps, characters,\
             cfg_scale, model, nb_iter, nb_batches, nb_repeats, seed, positive, negative,\
             denoising_strength, upscale_by, hard_skip_toggled, current_payload,\
-            skipped_model, char_prompts
+            skipped_model, char_prompts, use_clip_skip, clip_skip, enable_models_presets,\
+            char_weights, char_comopts, fe, ad
     load_db()
-    scenario     = None
-    batch        = None
-    styles       = None
-    hr           = False
-    restore      = False
-    upscaler     = None
-    chars        = None
-    char_prompts = None
-    sampler      = None
-    steps        = None
-    characters   = None
-    cfg_scale    = None
-    model        = None
-    nb_iter      = None
-    nb_batches   = None
-    nb_repeats   = None
-    positive     = None
-    negative     = None
-    upscale_by   = None
-    seed         = -1
+    scenario      = None
+    batch         = None
+    styles        = None
+    hr            = False
+    restore       = False
+    fe            = False
+    ad            = False
+    upscaler      = None
+    chars         = None
+    char_prompts  = None
+    char_weights  = None
+    char_comopts  = None
+    sampler       = None
+    steps         = None
+    characters    = None
+    cfg_scale     = None
+    model         = None
+    nb_iter       = None
+    nb_batches    = None
+    nb_repeats    = None
+    positive      = None
+    negative      = None
+    upscale_by    = None
+    use_clip_skip = None
+    clip_skip     = None
+    seed          = -1
     current_payload    = None
     skipped_model      = None
     hard_skip_toggled  = None
     denoising_strength = None
+    enable_models_presets = False

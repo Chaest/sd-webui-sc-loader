@@ -10,17 +10,17 @@ def add_prompt(sc_file, name, prompt, prompt_type, type_):
         sc_fd.write(prompt)
     print(f'{type_.capitalize()} {name} added')
 
-def get_wildcard_path(civitai_data):
-    return f'{get_cfg_path()}/{DB_DIR}/prompts/wild_cards/_wc_' + normalized_name(civitai_data['name'])
+def get_wildcard_path(name):
+    return f'{get_cfg_path()}/{DB_DIR}/prompts/wild_cards/_wc_' + normalized_name(name)
 
-def get_poses_path(civitai_data):
-    return f'{get_cfg_path()}/poses/' + normalized_name(civitai_data['name'])
+def get_poses_path(name):
+    return f'{get_cfg_path()}/poses/' + normalized_name(name)
 
 def get_batches_path(batch_name):
     return f'{get_cfg_path()}/{DB_DIR}/batches/{batch_name}.txt'
 
-def get_package_path(civitai_data):
+def get_package_path(name):
     packages_db_path = f'{get_cfg_path()}/{DB_DIR}/_packages'
     if not os.path.exists(packages_db_path):
         os.makedirs(packages_db_path)
-    return f'{packages_db_path}/_{normalized_name(civitai_data["name"])}'
+    return f'{packages_db_path}/_{normalized_name(name)}'

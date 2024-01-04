@@ -2,6 +2,8 @@ import random
 
 from .. import context as c
 
+from .scripts.composable_lora import adapt_lora
+
 anti_stack_overflow = ''
 
 def expand_prompt(prompt):
@@ -35,6 +37,7 @@ def build_prompts(scenario, styles, characters):
         if isinstance(db_char_prompt, list):
             chars_neg_prompts.append(db_char_prompt[1])
             db_char_prompt = db_char_prompt[0]
+        db_char_prompt = adapt_lora(db_char_prompt, i)
         chars_prompts.append(','.join((sc_char_prompt.get('pre', ''), db_char_prompt, c.char_prompts[i], sc_char_prompt.get('post', ''))))
 
     positive_prompt = '\n'.join((

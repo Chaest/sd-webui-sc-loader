@@ -2,14 +2,17 @@ import gradio as gr
 
 from modules.ui_components import FormRow, FormGroup
 from modules import shared
+from modules.shared import opts
 
 from ..ui_part import UiPart
-from ...process.constants import RESTORE_F, USE_HIRES, UPSCALER, DENOISE_ST, UPSCALE_BY
+from ...process.constants import RESTORE_F, USE_HIRES, UPSCALER, DENOISE_ST, UPSCALE_BY, USE_AD, USE_FE
 
 class RestoreAndHires(UiPart):
     def build_components(self):
         with FormRow(elem_classes='checkboxes-row', variant='compact'):
             self.restore_faces = gr.Checkbox(label='Restore faces', value=False)
+            self.enable_ad = gr.Checkbox(label='Enable AD', value=False, visible=opts.sc_loader_enable_ad_option)
+            self.enable_fe = gr.Checkbox(label='Enable FE', value=False, visible=opts.sc_loader_enable_fe_option)
             self.enable_hr = gr.Checkbox(label='Hires. fix', value=False)
 
         with FormGroup(visible=False) as self.hr_options:
@@ -49,5 +52,7 @@ class RestoreAndHires(UiPart):
             USE_HIRES: self.enable_hr,
             UPSCALER: self.upscaler,
             UPSCALE_BY: self.scale,
-            DENOISE_ST: self.strength
+            DENOISE_ST: self.strength,
+            USE_AD: self.enable_ad,
+            USE_FE: self.enable_fe
         }

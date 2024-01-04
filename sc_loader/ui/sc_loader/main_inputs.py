@@ -9,6 +9,8 @@ from ... import context as c
 
 from ..ui_part import UiPart
 
+from .char_inputs import char_opt_cache
+
 @contextmanager
 def col():
     with gr.Column(scale=1):
@@ -73,10 +75,16 @@ class MainInputs(UiPart):
 
         expected_characters = data['characters']
         c.expected_characters_idxs = [c.database['character_types'].index(character) for character in expected_characters]
-        return [*[
-            gr.update(visible=i in c.expected_characters_idxs)
-            for i in range(self.parent.nb_max_chars)
-        ]]
+        return [
+            *[
+                gr.update(visible=i in c.expected_characters_idxs)
+                for i in range(self.parent.nb_max_chars)
+            ],
+            *[
+                gr.update(visible=(i in c.expected_characters_idxs and char_opt_cache.get(i, False)))
+                for i in range(self.parent.nb_max_chars)
+            ]
+        ]
 
     def build_components(self):
         with col():
@@ -111,7 +119,7 @@ class MainInputs(UiPart):
 
     def link_actions(self, after=False):
         if after:
-            self.scenario.change(self.switch_sc, [self.scenario], [*self.parent.character_rows], queue=False)
+            self.scenario.change(self.switch_sc, [self.scenario], [*self.parent.character_rows, *self.parent.character_opt_rows], queue=False)
 
     def reload_data(self):
         return [

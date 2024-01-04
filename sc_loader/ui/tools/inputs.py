@@ -1,19 +1,16 @@
 import gradio as gr
 
 from sc_loader.process.db import copy_db, add_file_to_db
-from sc_loader.process.download import handle_base_model, handle_wildcards, handle_poses, handle_batch, handle_package, rehandle_package
+from sc_loader.process.download import handle_batch, generic_handler, generic_updater
 from sc_loader.openpose.sc_pose.sc_pose import openpose_to_scpose
 from ..ui_part import UiPart
 
 NOT_IMPLEMENTED = lambda _: 'Not implemented'
 ACTIONS = [
     handle_batch,
-    handle_base_model,
-    handle_poses,
-    handle_wildcards,
-    handle_package,
-    rehandle_package,
     openpose_to_scpose,
+    generic_handler,
+    generic_updater,
     add_file_to_db,
     copy_db
 ]
@@ -29,12 +26,9 @@ class Inputs(UiPart):
                     label='Action',
                     choices=[
                         'Download batch',
-                        'Download base model',
-                        'Download poses',
-                        'Download wildcard',
-                        'Download package',
-                        'Update package',
                         'Openpose to ScPose',
+                        'Download base model/pose/wildcard/package',
+                        'Update pose/wildcard/package',
                         'Create file in db',
                         'Create db'
                     ],

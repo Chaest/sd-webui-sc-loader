@@ -7,6 +7,8 @@ from .latent_couple import update_latent_couple_data
 from .ui_inputs_data import apply_ui_inputs
 from .model_preset import apply_model_preset
 from .prompt import build_prompts
+from .scripts.ad import apply_ad
+from .scripts.fe import apply_fe
 
 MODEL_IDX = 0
 DEFAULT_PAYLOAD_DATA = {
@@ -77,6 +79,8 @@ def create_payload(model, scenario, *styles_and_characters):
     update_cn_data(payload)
     update_latent_couple_data(payload)
     apply_ui_inputs(payload, model)
+    apply_ad(payload)
+    apply_fe(payload)
     styles = styles_and_characters[:len(c.styles)]
     characters = styles_and_characters[len(c.styles):]
     payload |= build_prompts(scenario, styles, characters)

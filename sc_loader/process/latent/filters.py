@@ -3,6 +3,19 @@ import torch.nn.functional as F
 
 from modules import devices
 
+COLORS = [
+    (0, 0, 0),
+    (255, 255, 255),
+    (255, 0, 0),
+    (0, 255, 0),
+    (0, 0, 255),
+    (255, 255, 0),
+    (0, 255, 255),
+    (255, 0, 255),
+    (192, 192, 192),
+    (255, 165, 0)
+]
+
 def create_filter(divisions, positions, weight, masks):
     return MultipleRectFilter(divisions, positions, weight) if isinstance(divisions, list) else PoseFilter(masks[divisions], positions, weight)
 

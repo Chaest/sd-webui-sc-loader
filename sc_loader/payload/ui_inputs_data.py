@@ -2,6 +2,8 @@ from .. import context as c
 
 def apply_ui_inputs(payload, model):
     payload['override_settings'] = {'sd_model_checkpoint': model}
+    if c.use_clip_skip:
+        payload['override_settings']['CLIP_stop_at_last_layers'] = c.clip_skip
     payload['batch_size'] = c.nb_iter
     payload['n_iter'] = c.nb_batches
     if c.sampler:
@@ -19,8 +21,3 @@ def apply_ui_inputs(payload, model):
         payload['hr_upscaler'] = c.upscaler or 'R-ESRGAN 4x+'
         w = payload['width']
         h = payload['height']
-        if w > 512 or h > 512:
-            mx = max(w, h)
-            ratio = float(512)/float(mx)
-            payload['width'] = int(float(payload['width']) * ratio)
-            payload['height'] = int(float(payload['height']) * ratio)
